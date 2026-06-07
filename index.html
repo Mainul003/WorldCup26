@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 
-  <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0PWSK5PDWH"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -150,6 +150,31 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
 
 /* PILLS */
 .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;align-items:center}
+
+/* DATE STRIP */
+.date-strip-wrap{margin-bottom:18px}
+.date-strip-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.date-strip-head .label{color:var(--text-low)}
+.date-strip-head .reset{font-family:var(--font-b);font-weight:600;font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-low);background:transparent;border:none;cursor:pointer;padding:4px 6px;border-radius:6px;transition:color 0.15s var(--ease)}
+.date-strip-head .reset:hover{color:var(--accent)}
+.date-strip-head .reset[hidden]{display:none}
+.date-strip{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:thin;scrollbar-color:var(--line-s) transparent}
+.date-strip::-webkit-scrollbar{height:6px}
+.date-strip::-webkit-scrollbar-thumb{background:var(--line-s);border-radius:3px}
+.date-chip{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:68px;padding:9px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;color:var(--text-mid);font-family:var(--font-b);cursor:pointer;transition:all 0.18s var(--ease);line-height:1}
+.date-chip:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+.date-chip .d-dow{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-low)}
+.date-chip .d-day{font-family:var(--font-d);font-weight:600;font-size:22px;color:var(--text-hi);letter-spacing:0.005em}
+.date-chip .d-mon{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-low);margin-top:1px}
+.date-chip .d-count{margin-top:3px;padding:1px 6px;font-size:9.5px;font-weight:700;letter-spacing:0.06em;border-radius:999px;background:var(--bg-card-h);color:var(--text-mid)}
+.date-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:var(--sh-sm)}
+.date-chip.active .d-dow,.date-chip.active .d-mon{color:rgba(255,255,255,0.78)}
+.date-chip.active .d-day{color:#fff}
+.date-chip.active .d-count{background:rgba(255,255,255,0.18);color:#fff}
+.date-chip.all{min-width:auto;padding:9px 18px;justify-content:center}
+.date-chip.all .d-day{font-size:14px;font-family:var(--font-b);font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
+.date-chip.today{position:relative}
+.date-chip.today::after{content:'TODAY';position:absolute;top:-7px;right:-6px;background:var(--neon-mag);color:#fff;font-size:8px;font-weight:700;letter-spacing:0.08em;padding:1px 5px;border-radius:4px}
 .pill{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line-s);color:var(--text-mid);font-family:var(--font-b);font-weight:600;font-size:13px;transition:all 0.18s var(--ease);cursor:pointer}
 .pill:hover{border-color:var(--accent);color:var(--accent)}
 .pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -429,6 +454,10 @@ footer .credits a{color:var(--accent);font-weight:600}
     </div>
     <button class="loc-btn" id="locBtn">Use My Location</button>
     <button class="fmt-btn" id="fmtBtn">12 H</button>
+  </div>
+  <div class="date-strip-wrap">
+    <div class="date-strip-head"><span class="label">Filter by Date</span><button class="reset" id="dateReset" hidden>Clear date filter</button></div>
+    <div class="date-strip" id="dateStrip"></div>
   </div>
   <div class="pill-row" id="pillRow"></div>
   <div class="fixtures-grid" id="fixturesGrid"></div>
@@ -2381,6 +2410,7 @@ let selectedCountry = COUNTRIES[0];
 let timeFormat = 12;
 let activeStage = 'all';
 let activeTeamFilter = 'all';
+let activeDateFilter = 'all';
 let modalTeamName = null;
 let posFilter = 'all';
 let squadSearchVal = '';
@@ -2440,6 +2470,37 @@ function renderPills(){
 }
 function setStage(s){activeStage=s;renderPills();renderFixtures();}
 function setTeamFilter(t){activeTeamFilter=t;if(t!=='all')activeStage='all';renderPills();renderFixtures();}
+function setDateFilter(d){activeDateFilter=d;renderDateStrip();renderFixtures();}
+
+/* ========== DATE STRIP ========== */
+function renderDateStrip(){
+  const strip=document.getElementById('dateStrip');
+  const reset=document.getElementById('dateReset');
+  if(!strip) return;
+  // bucket fixtures by date key in selectedCountry timezone
+  const buckets={};
+  FIXTURES.forEach(f=>{
+    const k=fixtureDateKey(f.utc,selectedCountry);
+    if(!buckets[k]) buckets[k]={key:k, date:convertToCountry(f.utc,selectedCountry), count:0};
+    buckets[k].count++;
+  });
+  const keys=Object.keys(buckets).sort();
+  const todayK=(()=>{const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dows=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html=`<button class="date-chip all${activeDateFilter==='all'?' active':''}" onclick="setDateFilter('all')"><span class="d-day">All Dates</span></button>`;
+  html+=keys.map(k=>{
+    const b=buckets[k];
+    const d=b.date;
+    const isToday=k===todayK;
+    const active=activeDateFilter===k?' active':'';
+    return `<button class="date-chip${active}${isToday?' today':''}" onclick="setDateFilter('${k}')"><span class="d-dow">${dows[d.getUTCDay()]}</span><span class="d-day">${d.getUTCDate()}</span><span class="d-mon">${months[d.getUTCMonth()]}</span><span class="d-count">${b.count} ${b.count===1?'match':'matches'}</span></button>`;
+  }).join('');
+  strip.innerHTML=html;
+  if(reset) reset.hidden = activeDateFilter==='all';
+}
+// reset button
+document.addEventListener('click',(e)=>{if(e.target&&e.target.id==='dateReset') setDateFilter('all');});
 
 /* ========== FIXTURES ========== */
 function fixtureDateKey(utcISO,country){
@@ -2458,6 +2519,7 @@ function renderFixtures(){
   let list=[...FIXTURES];
   if(activeStage!=='all') list=list.filter(f=>f.stage===activeStage);
   if(activeTeamFilter!=='all') list=list.filter(f=>f.home===activeTeamFilter||f.away===activeTeamFilter);
+  if(activeDateFilter!=='all') list=list.filter(f=>fixtureDateKey(f.utc,selectedCountry)===activeDateFilter);
   if(!list.length){
     grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-low);font-family:var(--font-d);font-size:22px;letter-spacing:0.1em">NO MATCHES FOUND</div>';
     return;
@@ -2506,7 +2568,7 @@ function renderFixtures(){
   grid.innerHTML=html;
 }
 
-function updateAllTimes(){updateNowLabel();renderFixtures();renderHeroScoreboard();}
+function updateAllTimes(){updateNowLabel();renderDateStrip();renderFixtures();renderHeroScoreboard();}
 
 /* ========== HERO SCOREBOARD — auto next upcoming match ========== */
 function renderHeroScoreboard(){
@@ -2652,7 +2714,7 @@ function renderLeaderboard(){
 /* ========== INIT ========== */
 function init(){
   renderCountryPicker();selectCountry('BD');
-  renderPills();renderFixtures();renderHeroScoreboard();
+  renderPills();renderDateStrip();renderFixtures();renderHeroScoreboard();
   renderGroups();renderLeaderboard();
   // Refresh clock + scoreboard every 60 seconds — auto-advances feature match as time passes
   setInterval(()=>{updateNowLabel();renderHeroScoreboard();},60000);
