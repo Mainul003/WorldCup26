@@ -115,6 +115,13 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
 .sb-team .flag{width:88px;height:60px;border-radius:7px}
 .sb-team h3{font-size:24px;font-weight:600;letter-spacing:0.005em}
 .sb-vs{font-family:var(--font-d);font-weight:500;font-size:18px;color:var(--text-low)}
+.sb-countdown{margin-top:20px;padding:12px 14px;background:var(--accent-soft);border:1px solid var(--line);border-radius:var(--r-md)}
+.sb-countdown[hidden]{display:none}
+.sb-countdown-label{display:block;text-align:center;font-family:var(--font-b);font-size:9px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.sb-countdown-units{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sb-countdown-unit{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 5px;text-align:center}
+.sb-countdown-unit strong{display:block;font-family:var(--font-d);font-size:24px;line-height:1;color:var(--text-hi)}
+.sb-countdown-unit span{display:block;margin-top:4px;font-size:8px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-low)}
 .sb-meta{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .sb-meta .mblock{display:flex;flex-direction:column;gap:3px}
 .sb-meta .mblock strong{font-family:var(--font-d);font-weight:500;font-size:19px;letter-spacing:0.005em;display:flex;align-items:center;gap:6px;color:var(--text-hi)}
@@ -231,6 +238,10 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
 .standings-table .pts{font-family:var(--font-d);font-size:18px;font-weight:700;color:var(--accent)}
 
 @media(max-width:600px){
+  .scoreboard{padding:18px}
+  .sb-team .flag{width:68px;height:47px}
+  .sb-team h3{font-size:19px}
+  .sb-countdown-unit strong{font-size:21px}
   .fixtures-grid{grid-template-columns:1fr}
   .fixture-card{padding:16px}
   .fix-teams{gap:6px}
@@ -493,6 +504,10 @@ footer .credits a{color:var(--accent);font-weight:600}
       <div class="scoreboard">
       <div class="sb-head"><span class="label">Feature Match</span><span class="sb-status"><span class="live-dot"></span>STARTING SOON</span></div>
       <div class="sb-teams" id="sbTeams"></div>
+      <div class="sb-countdown" id="featuredCountdown" hidden>
+        <span class="sb-countdown-label">Kickoff Countdown</span>
+        <div class="sb-countdown-units" id="featuredCountdownUnits"></div>
+      </div>
       <div class="sb-meta">
         <div class="mblock"><span class="label">Your Kick Off</span><strong id="featuredTime">—</strong></div>
         <div class="mblock"><span class="label">Venue</span><strong id="featuredVenue">—</strong></div>
@@ -2495,11 +2510,15 @@ let modalTeamName = null;
 let posFilter = 'all';
 let squadSearchVal = '';
 const RESULTS_CACHE_KEY = 'wc26-match-results-v1';
+const WATCH_SITE_URL = 'https://sportzfytvlive.xyz/';
 let matchResults = {};
 let resultsSyncing = false;
 
 try{matchResults=JSON.parse(localStorage.getItem(RESULTS_CACHE_KEY)||'{}')||{};}catch(e){matchResults={};}
 
+function openWatchSite(){
+  window.open(WATCH_SITE_URL,'_blank','noopener,noreferrer');
+}
 function escapeHTML(value){
   return String(value==null?'':value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
@@ -2772,7 +2791,7 @@ function renderFixtures(){
         ?'<div><div class="fix-score'+(isLive?' live':'')+'">'+result.homeScore+' - '+result.awayScore+'</div><span class="fix-result-status">'+escapeHTML(result.status)+'</span>'+scorers+'</div>'
         :'<div><span class="fix-vs">VS</span>'+(isPast?'<span class="fix-result-status">Result pending</span>':'')+'</div>';
       html+='<div class="fixture-card'+(f.stage==='ko'?' fix-stage-ko':'')+(isFinished?' finished':'')+'" style="--c-a:'+ca[0]+';--c-b:'+cb[0]+';--c-a-glow:'+ca[0]+'44;animation-delay:'+Math.min(ci,8)*0.04+'s">'
-        +'<div class="fix-head"><span class="fix-group">'+(f.label||f.group)+'</span>'+(!isTBD&&!isFinished?'<button class="fix-watch" onclick="alert(\'Broadcast links coming soon!\')">WATCH</button>':'')+'</div>'
+        +'<div class="fix-head"><span class="fix-group">'+(f.label||f.group)+'</span>'+(!isTBD&&!isFinished?'<button class="fix-watch" onclick="openWatchSite()" aria-label="Watch '+escapeHTML(f.home)+' versus '+escapeHTML(f.away)+'">WATCH</button>':'')+'</div>'
         +'<div class="fix-teams">'+tb(f.home,homeWon)+middle+tb(f.away,awayWon)+'</div>'
         +'<div class="fix-meta">'
         +'<div class="fix-time"><span class="fix-time-friendly">'+(isFinished?'Final score':ft.time)+'</span></div>'
@@ -2788,11 +2807,28 @@ function renderFixtures(){
 function updateAllTimes(){updateNowLabel();renderDateStrip();renderFixtures();renderHeroScoreboard();}
 
 /* ========== HERO SCOREBOARD — auto next upcoming match ========== */
+let featuredFixture=null;
+function updateFeaturedCountdown(){
+  const wrap=document.getElementById('featuredCountdown');
+  const units=document.getElementById('featuredCountdownUnits');
+  if(!wrap||!units||!featuredFixture){if(wrap)wrap.hidden=true;return;}
+  const remaining=new Date(featuredFixture.utc)-new Date();
+  if(remaining<=0){wrap.hidden=true;return;}
+  const totalSeconds=Math.floor(remaining/1000);
+  const days=Math.floor(totalSeconds/86400);
+  const hours=Math.floor((totalSeconds%86400)/3600);
+  const minutes=Math.floor((totalSeconds%3600)/60);
+  const seconds=totalSeconds%60;
+  const parts=[['Days',days],['Hours',hours],['Minutes',minutes],['Seconds',seconds]];
+  units.innerHTML=parts.map(([label,value])=>'<div class="sb-countdown-unit"><strong>'+String(value).padStart(2,'0')+'</strong><span>'+label+'</span></div>').join('');
+  wrap.hidden=false;
+}
 function renderHeroScoreboard(){
   const nowUTC=new Date();
   const real=FIXTURES.filter(f=>f.home!=='TBD').sort((a,b)=>new Date(a.utc)-new Date(b.utc));
   const liveFixture=real.find(f=>matchResults[f.id]&&matchResults[f.id].state==='in');
   const f=liveFixture||real.find(f=>new Date(f.utc)>=nowUTC)||[...real].reverse().find(f=>matchResults[f.id]&&matchResults[f.id].completed)||real[real.length-1];
+  featuredFixture=f;
   const result=matchResults[f.id];
   const ft=fmtFriendly(f.utc,selectedCountry,timeFormat);
   const msSince=nowUTC-new Date(f.utc);
@@ -2809,6 +2845,7 @@ function renderHeroScoreboard(){
     '<div class="sb-team">'+teamFlagImg(f.home,'lg')+'<h3>'+f.home+'</h3></div>'
     +(result&&(result.state==='in'||result.completed)?'<div class="fix-score'+(isLive?' live':'')+'">'+result.homeScore+' - '+result.awayScore+'</div>':'<div class="sb-vs">VS</div>')
     +'<div class="sb-team">'+teamFlagImg(f.away,'lg')+'<h3>'+f.away+'</h3></div>';
+  updateFeaturedCountdown();
 }
 
 /* ========== GROUPS ========== */
@@ -2947,6 +2984,7 @@ function init(){
   renderStandings();renderGroups();renderLeaderboard();syncMatchResults(false);
   // Refresh clock + scoreboard every 60 seconds — auto-advances feature match as time passes
   setInterval(()=>{updateNowLabel();renderHeroScoreboard();},60000);
+  setInterval(updateFeaturedCountdown,1000);
   setInterval(()=>syncMatchResults(false),5*60*1000);
 }
 /* ===== THEME TOGGLE ===== */
