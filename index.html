@@ -203,12 +203,17 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
 .fix-team-name{font-family:var(--font-d);font-weight:500;font-size:16px;letter-spacing:0.005em;line-height:1.05;color:var(--text-hi)}
 .fix-vs{font-family:var(--font-d);font-weight:400;font-size:14px;color:var(--text-low);padding:0 4px}
 .fix-team.winner .fix-team-name{color:var(--accent);font-weight:700}
-.fix-team.winner::after{content:'WINNER';font-family:var(--font-b);font-size:9px;font-weight:800;letter-spacing:0.12em;color:#fff;background:var(--accent);padding:3px 7px;border-radius:999px}
+.fix-team.loser{opacity:0.48;filter:grayscale(0.7)}
+.fix-team-result{font-family:var(--font-b);font-size:8px;font-weight:800;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;min-height:10px}
 .fix-score{font-family:var(--font-d);font-size:30px;font-weight:700;color:var(--text-hi);white-space:nowrap;text-align:center}
 .fix-score.live{color:var(--neon-mag)}
 .fix-result-status{display:block;margin-top:5px;font-family:var(--font-b);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-low);text-align:center}
-.fix-scorers{margin-top:8px;display:flex;flex-direction:column;gap:4px;max-width:150px}
-.fix-scorer{font-size:10px;line-height:1.25;color:var(--text-mid);text-align:center}
+.fix-scorers-row{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;margin-top:10px;position:relative;z-index:1}
+.fix-scorers{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fix-scorers.home{align-items:flex-start;text-align:left}
+.fix-scorers.away{align-items:flex-end;text-align:right}
+.fix-scorers-spacer{width:58px}
+.fix-scorer{font-size:10px;line-height:1.25;color:var(--text-mid)}
 .fix-scorer strong{color:var(--text-hi);font-weight:700}
 .fix-scorer .goal-minute{color:var(--accent);font-weight:700}
 .fixture-card.finished{border-color:var(--line-s)}
@@ -248,7 +253,8 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
   .fix-team .flag{width:48px;height:33px}
   .fix-team-name{font-size:14px}
   .fix-score{font-size:25px}
-  .fix-scorers{max-width:125px}
+  .fix-scorers-row{gap:6px}
+  .fix-scorers-spacer{width:48px}
   .standings-card{padding:12px}
   .standings-table{font-size:11px}
   .standings-table th,.standings-table td{padding:8px 5px}
@@ -2781,18 +2787,24 @@ function renderFixtures(){
       const isLive=!!(result&&result.state==='in');
       const homeWon=isFinished&&(result.homeWinner||result.homeScore>result.awayScore);
       const awayWon=isFinished&&(result.awayWinner||result.awayScore>result.homeScore);
-      const tb=(name,isWinner)=>isTBD
+      const isDraw=isFinished&&result.homeScore===result.awayScore;
+      const tb=(name,isWinner,isLoser)=>isTBD
         ?'<div class="fix-team"><div style="width:64px;height:44px;border-radius:6px;background:var(--bg-elev);border:1px dashed var(--line-s);display:grid;place-items:center;font-size:20px;color:var(--text-low)">?</div><span class="fix-team-name" style="color:var(--text-low)">TBD</span></div>'
-        :'<div class="fix-team'+(isWinner?' winner':'')+'" onclick="openTeamModal(\''+name.replace(/'/g,"\\'")+'\')">'+teamFlagImg(name,'md')+'<span class="fix-team-name">'+name+'</span></div>';
+        :'<div class="fix-team'+(isWinner?' winner':'')+(isLoser?' loser':'')+'" onclick="openTeamModal(\''+name.replace(/'/g,"\\'")+'\')">'+teamFlagImg(name,'md')+'<span class="fix-team-name">'+name+'</span>'+(isFinished?'<span class="fix-team-result">'+(isWinner?'Winner':'&nbsp;')+'</span>':'')+'</div>';
+      const scorerList=(team,side)=>{
+        const list=result&&result.scorers?result.scorers.filter(s=>normalizeTeamName(s.team)===normalizeTeamName(team)):[];
+        return '<div class="fix-scorers '+side+'">'+list.map(s=>'<div class="fix-scorer"><strong>'+escapeHTML(s.name)+'</strong> <span class="goal-minute">'+escapeHTML(s.minute)+'</span>'+(s.ownGoal?' (OG)':'')+'</div>').join('')+'</div>';
+      };
       const scorers=result&&result.scorers&&result.scorers.length
-        ?'<div class="fix-scorers">'+result.scorers.map(s=>'<div class="fix-scorer"><strong>'+escapeHTML(s.name)+'</strong> <span class="goal-minute">'+escapeHTML(s.minute)+'</span>'+(s.ownGoal?' (OG)':'')+'</div>').join('')+'</div>'
+        ?'<div class="fix-scorers-row">'+scorerList(f.home,'home')+'<div class="fix-scorers-spacer"></div>'+scorerList(f.away,'away')+'</div>'
         :'';
       const middle=hasScore
-        ?'<div><div class="fix-score'+(isLive?' live':'')+'">'+result.homeScore+' - '+result.awayScore+'</div><span class="fix-result-status">'+escapeHTML(result.status)+'</span>'+scorers+'</div>'
+        ?'<div><div class="fix-score'+(isLive?' live':'')+'">'+result.homeScore+' - '+result.awayScore+'</div><span class="fix-result-status">'+escapeHTML(result.status)+'</span></div>'
         :'<div><span class="fix-vs">VS</span>'+(isPast?'<span class="fix-result-status">Result pending</span>':'')+'</div>';
       html+='<div class="fixture-card'+(f.stage==='ko'?' fix-stage-ko':'')+(isFinished?' finished':'')+'" style="--c-a:'+ca[0]+';--c-b:'+cb[0]+';--c-a-glow:'+ca[0]+'44;animation-delay:'+Math.min(ci,8)*0.04+'s">'
         +'<div class="fix-head"><span class="fix-group">'+(f.label||f.group)+'</span>'+(!isTBD&&!isFinished?'<button class="fix-watch" onclick="openWatchSite()" aria-label="Watch '+escapeHTML(f.home)+' versus '+escapeHTML(f.away)+'">WATCH</button>':'')+'</div>'
-        +'<div class="fix-teams">'+tb(f.home,homeWon)+middle+tb(f.away,awayWon)+'</div>'
+        +'<div class="fix-teams">'+tb(f.home,homeWon,isFinished&&!isDraw&&!homeWon)+middle+tb(f.away,awayWon,isFinished&&!isDraw&&!awayWon)+'</div>'
+        +scorers
         +'<div class="fix-meta">'
         +'<div class="fix-time"><span class="fix-time-friendly">'+(isFinished?'Final score':ft.time)+'</span></div>'
         +'<div class="fix-local-time"><strong>'+selectedCountry.name+'</strong> local time</div>'
