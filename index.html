@@ -122,6 +122,11 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
 .sb-countdown-unit{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 5px;text-align:center}
 .sb-countdown-unit strong{display:block;font-family:var(--font-d);font-size:24px;line-height:1;color:var(--text-hi)}
 .sb-countdown-unit span{display:block;margin-top:4px;font-size:8px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-low)}
+.sb-watch{width:100%;margin-top:12px;padding:11px 14px;border-radius:var(--r-md);border:1px solid var(--accent);background:var(--accent);color:#fff;font-family:var(--font-b);font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;transition:all 0.2s var(--ease)}
+.sb-watch:hover{background:var(--accent-d);border-color:var(--accent-d)}
+.sb-watch.locked{background:var(--bg-deep);border-color:var(--line-s);color:var(--text-low);filter:grayscale(1);opacity:0.65}
+.sb-watch.locked:hover{background:var(--bg-deep);border-color:var(--line-s);color:var(--text-mid)}
+.sb-watch[hidden]{display:none}
 .sb-meta{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .sb-meta .mblock{display:flex;flex-direction:column;gap:3px}
 .sb-meta .mblock strong{font-family:var(--font-d);font-weight:500;font-size:19px;letter-spacing:0.005em;display:flex;align-items:center;gap:6px;color:var(--text-hi)}
@@ -513,6 +518,7 @@ footer .credits a{color:var(--accent);font-weight:600}
         <span class="sb-countdown-label">Kickoff Countdown</span>
         <div class="sb-countdown-units" id="featuredCountdownUnits"></div>
       </div>
+      <button class="sb-watch locked" id="featuredWatch" type="button">Watch available 1h before kickoff</button>
       <div class="sb-meta">
         <div class="mblock"><span class="label">Your Kick Off</span><strong id="featuredTime">—</strong></div>
         <div class="mblock"><span class="label">Venue</span><strong id="featuredVenue">—</strong></div>
@@ -2524,6 +2530,12 @@ try{matchResults=JSON.parse(localStorage.getItem(RESULTS_CACHE_KEY)||'{}')||{};}
 function openWatchSite(){
   window.open(WATCH_SITE_URL,'_blank','noopener,noreferrer');
 }
+function handleFeaturedWatch(){
+  if(!featuredFixture) return;
+  const result=matchResults[featuredFixture.id];
+  if(shouldShowWatchButton(featuredFixture,result,new Date())) openWatchSite();
+  else alert('Watch access will activate one hour before kickoff.');
+}
 function escapeHTML(value){
   return String(value==null?'':value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
@@ -2860,6 +2872,13 @@ function renderHeroScoreboard(){
   document.getElementById('featuredRound').textContent=f.label||f.group;
   const statusEl=document.querySelector('.sb-status');
   if(statusEl)statusEl.innerHTML='<span class="live-dot" style="background:'+statusColor+';box-shadow:0 0 12px '+statusColor+'"></span><span style="color:'+statusColor+'">'+statusText+'</span>';
+  const watchEl=document.getElementById('featuredWatch');
+  if(watchEl){
+    const canWatch=shouldShowWatchButton(f,result,nowUTC);
+    watchEl.hidden=!!(result&&result.completed);
+    watchEl.classList.toggle('locked',!canWatch);
+    watchEl.textContent=canWatch?'Watch Match':'Watch available 1h before kickoff';
+  }
   document.getElementById('sbTeams').innerHTML=
     '<div class="sb-team">'+teamFlagImg(f.home,'lg')+'<h3>'+f.home+'</h3></div>'
     +(result&&(result.state==='in'||result.completed)?'<div class="fix-score'+(isLive?' live':'')+'">'+result.homeScore+' - '+result.awayScore+'</div>':'<div class="sb-vs">VS</div>')
@@ -3017,6 +3036,7 @@ function init(){
   icon();
 })();
 document.addEventListener('DOMContentLoaded',init);
+document.getElementById('featuredWatch').addEventListener('click',handleFeaturedWatch);
 </script>
 </body>
 </html>
