@@ -210,14 +210,13 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
 .fix-result-status{display:block;margin-top:5px;font-family:var(--font-b);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-low);text-align:center}
 .fix-scorers-row{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;margin-top:10px;position:relative;z-index:1}
 .fix-scorers{display:flex;flex-direction:column;gap:4px;min-width:0}
-.fix-scorers.home{align-items:flex-start;text-align:left}
-.fix-scorers.away{align-items:flex-end;text-align:right}
+.fix-scorers.home,.fix-scorers.away{align-items:center;text-align:center}
 .fix-scorers-spacer{width:58px}
 .fix-scorer{font-size:10px;line-height:1.25;color:var(--text-mid)}
 .fix-scorer strong{color:var(--text-hi);font-weight:700}
 .fix-scorer .goal-minute{color:var(--accent);font-weight:700}
 .fixture-card.finished{border-color:var(--line-s)}
-.fixture-card.finished::after{content:'FULL TIME';position:absolute;right:14px;bottom:13px;font-family:var(--font-b);font-size:9px;font-weight:800;letter-spacing:0.13em;color:var(--accent)}
+.fix-full-time{font-family:var(--font-b);font-size:9px;font-weight:800;letter-spacing:0.13em;color:var(--accent);text-transform:uppercase;padding:4px 8px;border-radius:5px;background:var(--accent-soft)}
 .fix-meta{margin-top:16px;padding-top:15px;border-top:1px solid var(--line);position:relative;z-index:1}
 .fix-time{font-family:var(--font-d);font-weight:500;font-size:21px;letter-spacing:0.005em;line-height:1;color:var(--text-hi)}
 .fix-time-friendly{color:var(--accent);margin-right:6px}
@@ -2744,6 +2743,13 @@ function fixtureDateLabel(utcISO,country){
   return days[d.getUTCDay()]+', '+ms[d.getUTCMonth()]+' '+d.getUTCDate()+', '+d.getUTCFullYear();
 }
 
+function shouldShowWatchButton(fixture,result,now){
+  if(fixture.home==='TBD'||(result&&result.completed)) return false;
+  const untilKickoff=new Date(fixture.utc)-now;
+  // Once available, keep WATCH visible until the API confirms full time.
+  return untilKickoff<=60*60*1000;
+}
+
 function renderFixtures(){
   const grid=document.getElementById('fixturesGrid');
   let list=[...FIXTURES];
@@ -2785,6 +2791,7 @@ function renderFixtures(){
       const hasScore=!!(result&&(result.state==='in'||result.completed));
       const isFinished=!!(result&&result.completed);
       const isLive=!!(result&&result.state==='in');
+      const showWatch=shouldShowWatchButton(f,result,nowUTC);
       const homeWon=isFinished&&(result.homeWinner||result.homeScore>result.awayScore);
       const awayWon=isFinished&&(result.awayWinner||result.awayScore>result.homeScore);
       const isDraw=isFinished&&result.homeScore===result.awayScore;
@@ -2802,7 +2809,7 @@ function renderFixtures(){
         ?'<div><div class="fix-score'+(isLive?' live':'')+'">'+result.homeScore+' - '+result.awayScore+'</div><span class="fix-result-status">'+escapeHTML(result.status)+'</span></div>'
         :'<div><span class="fix-vs">VS</span>'+(isPast?'<span class="fix-result-status">Result pending</span>':'')+'</div>';
       html+='<div class="fixture-card'+(f.stage==='ko'?' fix-stage-ko':'')+(isFinished?' finished':'')+'" style="--c-a:'+ca[0]+';--c-b:'+cb[0]+';--c-a-glow:'+ca[0]+'44;animation-delay:'+Math.min(ci,8)*0.04+'s">'
-        +'<div class="fix-head"><span class="fix-group">'+(f.label||f.group)+'</span>'+(!isTBD&&!isFinished?'<button class="fix-watch" onclick="openWatchSite()" aria-label="Watch '+escapeHTML(f.home)+' versus '+escapeHTML(f.away)+'">WATCH</button>':'')+'</div>'
+        +'<div class="fix-head"><span class="fix-group">'+(f.label||f.group)+'</span>'+(isFinished?'<span class="fix-full-time">Full Time</span>':showWatch?'<button class="fix-watch" onclick="openWatchSite()" aria-label="Watch '+escapeHTML(f.home)+' versus '+escapeHTML(f.away)+'">WATCH</button>':'')+'</div>'
         +'<div class="fix-teams">'+tb(f.home,homeWon,isFinished&&!isDraw&&!homeWon)+middle+tb(f.away,awayWon,isFinished&&!isDraw&&!awayWon)+'</div>'
         +scorers
         +'<div class="fix-meta">'
@@ -2995,7 +3002,7 @@ function init(){
   renderPills();renderDateStrip();renderFixtures();renderHeroScoreboard();
   renderStandings();renderGroups();renderLeaderboard();syncMatchResults(false);
   // Refresh clock + scoreboard every 60 seconds — auto-advances feature match as time passes
-  setInterval(()=>{updateNowLabel();renderHeroScoreboard();},60000);
+  setInterval(()=>{updateNowLabel();renderFixtures();renderHeroScoreboard();},60000);
   setInterval(updateFeaturedCountdown,1000);
   setInterval(()=>syncMatchResults(false),5*60*1000);
 }
