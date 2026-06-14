@@ -161,7 +161,15 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
 .fmt-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 
 /* PILLS */
-.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;align-items:center}
+.pill-row{margin-bottom:28px}
+.fixture-filters{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-sm);overflow:hidden}
+.filter-section{padding:15px 17px}
+.filter-section+.filter-section{border-top:1px solid var(--line);background:var(--bg-elev)}
+.filter-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:11px}
+.filter-section-title{font-family:var(--font-b);font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-low)}
+.filter-section-note{font-size:11px;color:var(--text-low)}
+.filter-options{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.team-options{gap:7px}
 
 /* DATE STRIP */
 .date-strip-wrap{margin-bottom:18px}
@@ -190,9 +198,30 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
 .pill{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line-s);color:var(--text-mid);font-family:var(--font-b);font-weight:600;font-size:13px;transition:all 0.18s var(--ease);cursor:pointer}
 .pill:hover{border-color:var(--accent);color:var(--accent)}
 .pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.stage-options .pill{border-radius:8px;padding:9px 16px}
+.team-options .pill{background:var(--bg-card);padding:7px 12px;font-size:12px}
+.team-options .pill:hover{background:var(--surface)}
+.team-options .pill.active{background:var(--accent);color:#fff}
 
 /* FIXTURES */
 .fixtures-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px}
+.fixture-date-head{grid-column:1/-1;display:flex;align-items:center;gap:16px;margin:0 0 8px}
+.fixture-date-head+.fixture-date-head{margin-top:20px}
+.fixture-date-title{display:flex;align-items:center;gap:9px;font-family:var(--font-d);font-size:20px;letter-spacing:0.06em;color:var(--text-hi);white-space:nowrap}
+.fixture-date-title::before{content:'';width:18px;height:18px;flex-shrink:0;background:center/contain no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b909b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='5' width='18' height='16' rx='2'/><path d='M16 3v4M8 3v4M3 10h18'/><path d='M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01'/></svg>")}
+.fixture-date-head.past .fixture-date-title{color:var(--text-low)}
+.fixture-date-line{flex:1;height:1px;background:var(--line)}
+.fixture-date-summary{display:flex;align-items:center;gap:15px;white-space:nowrap}
+.date-stat{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-b);font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-low)}
+.date-stat::before{content:'';width:17px;height:17px;border:1.5px solid currentColor;border-radius:50%;box-sizing:border-box}
+.date-stat.completed{color:var(--accent)}
+.date-stat.completed::before{content:'✓';display:grid;place-items:center;font-size:11px;line-height:1}
+.date-stat.live{color:var(--neon-mag)}
+.date-stat.live::before{background:currentColor;box-shadow:0 0 0 4px var(--red-soft);animation:livePulse 1.4s ease-in-out infinite}
+.date-stat.remaining{color:#b96512;background:rgba(217,128,31,0.1);border:1px solid rgba(217,128,31,0.22);border-radius:999px;padding:5px 9px}
+.date-stat.remaining::before{width:18px;height:18px;border:none;border-radius:0;background:center/contain no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b96512' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M9 2h6M12 14l3-3'/><circle cx='12' cy='14' r='7'/><path d='M19 7l2 2'/></svg>")}
+.date-stat.total{padding-left:15px;border-left:1px solid var(--line-s)}
+.date-stat.total::before{display:none}
 .fixture-card{position:relative;background:var(--bg-card);border-radius:var(--r-lg);padding:20px;border:1px solid var(--line);overflow:hidden;transition:all 0.25s var(--ease);animation:slideUp 0.6s var(--ease) backwards;box-shadow:var(--sh-sm)}
 .fixture-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--c-a,var(--line-s)),var(--c-b,var(--line-s)));pointer-events:none}
 .fixture-card:hover{transform:translateY(-3px);border-color:var(--line-s);box-shadow:var(--sh-md)}
@@ -253,6 +282,16 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
   .sb-countdown-unit strong{font-size:21px}
   .fixtures-grid{grid-template-columns:1fr}
   .fixture-card{padding:16px}
+  .filter-section{padding:13px}
+  .filter-section-head{align-items:flex-start;flex-direction:column;gap:3px}
+  .stage-options .pill{flex:1;justify-content:center;padding:8px 10px}
+  .team-options .pill{padding:7px 10px}
+  .fixture-date-head{align-items:flex-start;flex-wrap:wrap;gap:9px}
+  .fixture-date-title{width:100%;font-size:18px}
+  .fixture-date-line{display:none}
+  .fixture-date-summary{width:100%;gap:10px;flex-wrap:wrap;padding-left:27px}
+  .date-stat{font-size:9px}
+  .date-stat.total{padding-left:10px}
   .fix-teams{gap:6px}
   .fix-team .flag{width:48px;height:33px}
   .fix-team-name{font-size:14px}
@@ -550,7 +589,7 @@ footer .credits a{color:var(--accent);font-weight:600}
     <button class="fmt-btn" id="fmtBtn">12 H</button>
   </div>
   <div class="date-strip-wrap">
-    <div class="date-strip-head"><span class="label">Filter by Date</span><button class="reset" id="dateReset" hidden>Clear date filter</button></div>
+    <div class="date-strip-head"><span class="label">Filter by Date</span><button class="reset" id="dateReset" hidden>View Full Fixture</button></div>
     <div class="date-strip" id="dateStrip"></div>
   </div>
   <div class="pill-row" id="pillRow"></div>
@@ -2520,7 +2559,7 @@ let selectedCountry = COUNTRIES[0];
 let timeFormat = 12;
 let activeStage = 'all';
 let activeTeamFilter = 'all';
-let activeDateFilter = 'all';
+let activeDateFilter = 'today';
 let modalTeamName = null;
 let posFilter = 'all';
 let squadSearchVal = '';
@@ -2706,11 +2745,21 @@ document.getElementById('hamburger').addEventListener('click',()=>document.getEl
 /* ========== PILLS (stage + team filter) ========== */
 function renderPills(){
   const stages=[{k:'all',l:'All Matches'},{k:'group',l:'Group Stage'},{k:'ko',l:'Knockout Stage'}];
-  let html=stages.map(s=>`<button class="pill${activeStage===s.k?' active':''}" onclick="setStage('${s.k}')">${s.l}</button>`).join('');
   const groupTeams=[...new Set(FIXTURES.filter(f=>f.stage==='group').flatMap(f=>[f.home,f.away]))].sort();
-  html+=`<span style="margin:0 6px;border-left:1px solid var(--line-s);height:22px;display:inline-block;vertical-align:middle"></span>`;
-  html+=`<button class="pill${activeTeamFilter==='all'?' active':''}" onclick="setTeamFilter('all')">All Teams</button>`;
-  html+=groupTeams.map(t=>`<button class="pill${activeTeamFilter===t?' active':''}" onclick="setTeamFilter('${t.replace(/'/g,"\\'")}')"><span style="display:inline-block;vertical-align:middle;margin-right:5px">${teamFlagImg(t,'xs')}</span>${t}</button>`).join('');
+  const stageButtons=stages.map(s=>`<button class="pill${activeStage===s.k?' active':''}" onclick="setStage('${s.k}')">${s.l}</button>`).join('');
+  const teamButtons=`<button class="pill${activeTeamFilter==='all'?' active':''}" onclick="setTeamFilter('all')">All Teams</button>`
+    +groupTeams.map(t=>`<button class="pill${activeTeamFilter===t?' active':''}" onclick="setTeamFilter('${t.replace(/'/g,"\\'")}')">${teamFlagImg(t,'xs')} ${t}</button>`).join('');
+  const selectedTeam=activeTeamFilter==='all'?'Showing every team':'Selected: '+activeTeamFilter;
+  const html=`<div class="fixture-filters">
+    <div class="filter-section">
+      <div class="filter-section-head"><span class="filter-section-title">Match Type</span><span class="filter-section-note">Choose a tournament stage</span></div>
+      <div class="filter-options stage-options">${stageButtons}</div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-section-head"><span class="filter-section-title">Filter by Team</span><span class="filter-section-note">${selectedTeam}</span></div>
+      <div class="filter-options team-options">${teamButtons}</div>
+    </div>
+  </div>`;
   document.getElementById('pillRow').innerHTML=html;
 }
 function setStage(s){activeStage=s;renderPills();renderFixtures();}
@@ -2718,6 +2767,17 @@ function setTeamFilter(t){activeTeamFilter=t;if(t!=='all')activeStage='all';rend
 function setDateFilter(d){activeDateFilter=d;renderDateStrip();renderFixtures();}
 
 /* ========== DATE STRIP ========== */
+function currentDateKeyForCountry(country){
+  return fixtureDateKey(new Date().toISOString(),country);
+}
+function defaultFixtureDateKey(country){
+  const keys=[...new Set(FIXTURES.map(f=>fixtureDateKey(f.utc,country)))].sort();
+  const today=currentDateKeyForCountry(country);
+  return keys.find(k=>k>=today)||keys[keys.length-1];
+}
+function resolvedDateFilter(){
+  return activeDateFilter==='today'?defaultFixtureDateKey(selectedCountry):activeDateFilter;
+}
 function renderDateStrip(){
   const strip=document.getElementById('dateStrip');
   const reset=document.getElementById('dateReset');
@@ -2730,18 +2790,23 @@ function renderDateStrip(){
     buckets[k].count++;
   });
   const keys=Object.keys(buckets).sort();
-  const todayK=(()=>{const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
+  const todayK=currentDateKeyForCountry(selectedCountry);
+  const selectedDate=resolvedDateFilter();
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const dows=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  let html=`<button class="date-chip all${activeDateFilter==='all'?' active':''}" onclick="setDateFilter('all')"><span class="d-day">All Dates</span></button>`;
+  let html=`<button class="date-chip all${activeDateFilter==='all'?' active':''}" onclick="setDateFilter('all')"><span class="d-day">Full Fixture</span></button>`;
   html+=keys.map(k=>{
     const b=buckets[k];
     const d=b.date;
     const isToday=k===todayK;
-    const active=activeDateFilter===k?' active':'';
+    const active=selectedDate===k?' active':'';
     return `<button class="date-chip${active}${isToday?' today':''}" onclick="setDateFilter('${k}')"><span class="d-dow">${dows[d.getUTCDay()]}</span><span class="d-day">${d.getUTCDate()}</span><span class="d-mon">${months[d.getUTCMonth()]}</span><span class="d-count">${b.count} ${b.count===1?'match':'matches'}</span></button>`;
   }).join('');
   strip.innerHTML=html;
+  requestAnimationFrame(()=>{
+    const activeChip=strip.querySelector('.date-chip.active:not(.all)');
+    if(activeChip) strip.scrollLeft=Math.max(0,activeChip.offsetLeft-(strip.clientWidth-activeChip.offsetWidth)/2);
+  });
   if(reset) reset.hidden = activeDateFilter==='all';
 }
 // reset button
@@ -2771,7 +2836,8 @@ function renderFixtures(){
   let list=[...FIXTURES];
   if(activeStage!=='all') list=list.filter(f=>f.stage===activeStage);
   if(activeTeamFilter!=='all') list=list.filter(f=>f.home===activeTeamFilter||f.away===activeTeamFilter);
-  if(activeDateFilter!=='all') list=list.filter(f=>fixtureDateKey(f.utc,selectedCountry)===activeDateFilter);
+  const selectedDate=resolvedDateFilter();
+  if(selectedDate!=='all') list=list.filter(f=>fixtureDateKey(f.utc,selectedCountry)===selectedDate);
   if(!list.length){
     grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-low);font-family:var(--font-d);font-size:22px;letter-spacing:0.1em">NO MATCHES FOUND</div>';
     return;
@@ -2791,11 +2857,18 @@ function renderFixtures(){
     const matches=byDate[dk];
     const lbl=fixtureDateLabel(matches[0].utc,selectedCountry);
     const allPast=matches.every(f=>new Date(f.utc)<nowUTC);
-    const col=allPast?'var(--text-low)':'var(--text-hi)';
-    html+='<div style="grid-column:1/-1;display:flex;align-items:center;gap:16px;margin:'+(ci===0?'0':'20px')+' 0 8px">'
-      +'<div style="font-family:var(--font-d);font-size:20px;letter-spacing:0.06em;color:'+col+'">'+lbl+'</div>'
-      +'<div style="flex:1;height:1px;background:var(--line)"></div>'
-      +'<span style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-low)">'+matches.length+' MATCH'+(matches.length>1?'ES':'')+'</span>'
+    const completedCount=matches.filter(f=>matchResults[f.id]&&matchResults[f.id].completed).length;
+    const liveCount=matches.filter(f=>matchResults[f.id]&&matchResults[f.id].state==='in').length;
+    const remainingCount=matches.length-completedCount-liveCount;
+    html+='<div class="fixture-date-head'+(allPast?' past':'')+'" style="margin-top:'+(ci===0?'0':'20px')+'">'
+      +'<div class="fixture-date-title">'+lbl+'</div>'
+      +'<div class="fixture-date-line"></div>'
+      +'<div class="fixture-date-summary">'
+      +(completedCount?'<span class="date-stat completed">'+completedCount+' completed</span>':'')
+      +(liveCount?'<span class="date-stat live">'+liveCount+' live</span>':'')
+      +(remainingCount?'<span class="date-stat remaining">'+remainingCount+' remaining</span>':'')
+      +'<span class="date-stat total">'+matches.length+' match'+(matches.length>1?'es':'')+'</span>'
+      +'</div>'
       +'</div>';
     matches.forEach(f=>{
       const isTBD=f.home==='TBD';
