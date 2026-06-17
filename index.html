@@ -336,6 +336,7 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
 .modal-team-info{flex:1;min-width:200px}
 .modal-team-info h2{font-size:32px;font-weight:600;display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:var(--text-hi)}
 .count-badge{display:inline-block;padding:4px 10px;background:var(--accent-soft);color:var(--accent);font-family:var(--font-b);font-weight:700;font-size:11px;letter-spacing:0.08em;border-radius:6px}
+.rank-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(230,172,68,0.14);color:var(--neon-yellow);border:1px solid rgba(230,172,68,0.28);font-family:var(--font-b);font-weight:800;font-size:11px;letter-spacing:0.08em;border-radius:6px;text-transform:uppercase}
 .coach-line{margin-top:8px;color:var(--text-mid);font-size:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .coach-line strong{color:var(--text-hi)}
 .coach-style{display:inline-block;padding:3px 9px;background:var(--accent-soft);color:var(--accent);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;border-radius:5px;font-weight:700}
@@ -1143,6 +1144,19 @@ const GROUPS = [
   {name:'Group K', emoji:'🇵🇹', teams:['Portugal','DR Congo','Uzbekistan','Colombia']},
   {name:'Group L', emoji:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', teams:['England','Croatia','Ghana','Panama']},
 ];
+
+// FIFA/Coca-Cola Men's World Ranking, latest official update shown by FIFA: 11 June 2026.
+const FIFA_RANKINGS = {
+  'Argentina':1,'Spain':2,'France':3,'Portugal':4,'Brazil':5,'England':6,
+  'Morocco':7,'Netherlands':8,'Belgium':9,'Croatia':10,'Italy':11,'Germany':12,
+  'Colombia':13,'Mexico':14,'Uruguay':15,'United States':16,'Japan':17,'Switzerland':18,
+  'Senegal':19,'Iran':20,'Korea Republic':22,'Ecuador':23,'Austria':24,'Australia':25,
+  'Canada':26,'Norway':27,'Türkiye':28,'Egypt':29,'Algeria':30,'Sweden':31,
+  'Panama':32,'Qatar':34,'Czechia':35,'Ivory Coast':36,'Tunisia':39,
+  'Paraguay':40,'Saudi Arabia':42,'South Africa':50,'Ghana':51,'Uzbekistan':56,
+  'Iraq':58,'New Zealand':60,'DR Congo':61,'Cape Verde':68,'Jordan':72,
+  'Bosnia & Herz.':75,'Haiti':83,'Scotland':84,'Curaçao':86
+};
 
 /* ========== FLAG CODE OVERRIDES for new teams ========== */
 Object.assign(TEAM_FLAG_CODES, {
@@ -2989,9 +3003,11 @@ function openTeamModal(name){
   modalTeamName=name;posFilter='all';
   document.querySelectorAll('.pos-filter').forEach(b=>b.classList.toggle('active',b.dataset.pos==='all'));
   const cp=colourPair(name);
+  const fifaRank=FIFA_RANKINGS[name];
+  const rankBadge=fifaRank?` <span class="rank-badge">FIFA Rank #${fifaRank}</span>`:'';
   document.getElementById('modalHead').style.background=`linear-gradient(135deg,${cp[0]}22,transparent)`;
   document.getElementById('modalFlagWrap').innerHTML=teamFlagImg(name,'lg');
-  document.getElementById('modalTeam').innerHTML=`${name} <span class="count-badge">${squad.players.length} PLAYERS</span>`;
+  document.getElementById('modalTeam').innerHTML=`${name} <span class="count-badge">${squad.players.length} PLAYERS</span>${rankBadge}`;
   document.getElementById('modalCoach').innerHTML=`<span>Coach: <strong>${squad.coach}</strong></span><span style="color:var(--text-low)">·</span><span>${squad.confederation}</span>`;
   renderModalPlayers(squad,name);renderClubs(squad);
   const modalEl=document.getElementById('modal');
