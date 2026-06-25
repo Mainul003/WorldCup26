@@ -372,16 +372,54 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
 .pc-club{display:flex;align-items:center;gap:6px;margin-top:6px;color:var(--text-mid);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pc-club .club-dot{width:6px;height:6px;border-radius:50%;background:var(--neon-or)}
 
-/* LEADERBOARD */
-.leader-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.leader-card{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;box-shadow:var(--sh-sm)}
-.leader-card h4{font-family:var(--font-b);font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 16px}
-.leader-row{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
-.leader-row:last-child{border-bottom:none}
-.leader-rank{font-family:var(--font-d);font-weight:600;font-size:18px;color:var(--text-low);text-align:center}
-.leader-row:first-child .leader-rank{color:var(--gold)}
-.leader-name{font-size:14px;display:flex;align-items:center;gap:8px;color:var(--text-hi);font-weight:500}
-.leader-val{font-family:var(--font-d);font-weight:600;font-size:21px;color:var(--accent)}
+/* TOP SCORERS */
+.scorer-board{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-sm);overflow:hidden}
+.scorer-board-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;border-bottom:1px solid var(--line);background:var(--bg-elev)}
+.scorer-title{display:flex;align-items:center;gap:12px;min-width:0}
+.scorer-title-mark{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);border:1px solid var(--line);display:grid;place-items:center;color:var(--accent);font-family:var(--font-d);font-size:22px;font-weight:600;flex-shrink:0}
+.scorer-title-mark svg{width:20px;height:20px;stroke-width:2.2}
+.scorer-title h3{font-family:var(--font-d);font-size:25px;font-weight:600;color:var(--text-hi)}
+.scorer-title span{display:block;color:var(--text-low);font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;margin-top:2px}
+.scorer-season{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line-s);border-radius:999px;color:var(--text-mid);font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;background:var(--surface);white-space:nowrap}
+.scorer-season::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.scorer-filters{display:flex;gap:8px;flex-wrap:wrap;padding:18px 22px;border-bottom:1px solid var(--line)}
+.scorer-filter{border:none;background:var(--bg-card-h);color:var(--text-mid);padding:8px 14px;border-radius:999px;font-family:var(--font-b);font-size:12px;font-weight:800;transition:all 0.18s var(--ease)}
+.scorer-filter:hover{color:var(--accent)}
+.scorer-filter.active{background:var(--accent);color:#fff}
+.scorer-table-wrap{overflow-x:auto}
+.scorer-table{width:100%;border-collapse:collapse;min-width:700px}
+.scorer-table th{padding:13px 22px;color:var(--text-low);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;text-align:left;border-bottom:1px solid var(--line)}
+.scorer-table th:last-child,.scorer-table td:last-child{text-align:right}
+.scorer-table td{padding:15px 22px;border-bottom:1px solid var(--line);vertical-align:middle}
+.scorer-table tr:last-child td{border-bottom:0}
+.scorer-rank{font-family:var(--font-d);font-size:18px;font-weight:600;color:var(--text-low);width:42px}
+.scorer-player{display:flex;align-items:center;gap:13px;min-width:250px}
+.scorer-avatar{position:relative;width:48px;height:48px;flex-shrink:0}
+.scorer-avatar img.player-photo{width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line)}
+.scorer-avatar .flag{position:absolute;right:-2px;bottom:0;border-radius:50%;width:19px;height:19px;border:2px solid var(--bg-card)}
+.scorer-info{min-width:0}
+.scorer-name{display:block;color:var(--text-hi);font-weight:800;font-size:15px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scorer-meta{display:block;color:var(--text-low);font-size:12px;margin-top:2px}
+.scorer-team{display:flex;align-items:center;gap:8px;color:var(--text-mid);font-size:13px;font-weight:600;white-space:nowrap}
+.scorer-pos{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:4px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:800;letter-spacing:0.08em}
+.scorer-goals{font-family:var(--font-d);font-size:26px;font-weight:700;color:var(--accent);line-height:1}
+.scorer-empty{padding:34px;text-align:center;color:var(--text-low);font-family:var(--font-d);font-size:22px;letter-spacing:0.08em}
+.scorer-pagination{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 22px;border-top:1px solid var(--line);background:var(--bg-elev)}
+.scorer-page-info{color:var(--text-low);font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
+.scorer-page-actions{display:flex;gap:8px;align-items:center}
+.scorer-page-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--line-s);background:var(--surface);color:var(--text-mid);display:grid;place-items:center;transition:all 0.18s var(--ease);padding:0}
+.scorer-page-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+.scorer-page-btn:disabled{opacity:0.42;cursor:not-allowed}
+.scorer-page-btn svg{width:17px;height:17px}
+@media(max-width:700px){
+  .scorer-board-head{align-items:flex-start;flex-direction:column;padding:16px}
+  .scorer-filters{padding:14px 16px;flex-wrap:nowrap;overflow-x:auto}
+  .scorer-filter{flex:0 0 auto}
+  .scorer-table{min-width:560px}
+  .scorer-table th,.scorer-table td{padding:12px 14px}
+  .scorer-player{min-width:210px}
+  .scorer-pagination{padding:12px 16px}
+}
 
 /* PLAYER PROFILE MODAL */
 .pm-backdrop{position:fixed;inset:0;background:rgba(28,32,40,0.42);backdrop-filter:blur(4px);z-index:300;display:none;justify-content:flex-end}
@@ -521,7 +559,7 @@ footer .credits a{color:var(--accent);font-weight:600}
       <li><a href="#fixtures">Fixtures</a></li>
       <li><a href="#standings">Standings</a></li>
       <li><a href="#teams">Teams</a></li>
-      <li><a href="#stats">Stats</a></li>
+      <li><a href="#stats">Top Scorer</a></li>
       <li><a href="#time">Time</a></li>
     </ul>
     <div class="nav-right">
@@ -621,10 +659,10 @@ footer .credits a{color:var(--accent);font-weight:600}
 
 <section class="section" id="stats">
   <div class="sec-head">
-    <div class="lhs"><span class="label">03 — Numbers Don't Lie</span><h2>The <span class="glow">Leaders.</span></h2><div class="diagonal"></div></div>
-    <div class="rhs">Career hauls and international milestones — the players writing history at this tournament.</div>
+    <div class="lhs"><span class="label">04 - Player Stats</span><h2>Top <span class="glow">Goal Scorer.</span></h2><div class="diagonal"></div></div>
+    <div class="rhs">Track the Golden Boot race with goals, assists, positions, and country form. Live scorer events are used when match data is available.</div>
   </div>
-  <div class="leader-grid" id="leaderGrid"></div>
+  <div class="scorer-board" id="leaderGrid"></div>
 </section>
 
 <footer>
@@ -2537,7 +2575,36 @@ ALL_TEAM_NAMES.forEach(name=>{
   }
 });
 
-/* ========== DATA: LEADERBOARD ========== */
+/* ========== DATA: TOP SCORERS ========== */
+const SCORER_FILTERS = [
+  {key:'all',label:'All'},
+  {key:'ST',label:'Striker'},
+  {key:'WING',label:'Winger'},
+  {key:'CAM',label:'Attacking Midfielder'},
+  {key:'CM',label:'Midfielder'},
+  {key:'FB',label:'Fullback'},
+  {key:'CB',label:'Center-back'},
+  {key:'GK',label:'Keeper'}
+];
+const TOP_SCORERS_FALLBACK = [
+  {name:'Lionel Messi',team:'Argentina',pos:'CAM',goals:5,assists:0},
+  {name:'Vinicius Junior',team:'Brazil',pos:'LW',goals:4,assists:1},
+  {name:'Kylian Mbappe',team:'France',pos:'ST',goals:4,assists:0},
+  {name:'Erling Haaland',team:'Norway',pos:'ST',goals:4,assists:0},
+  {name:'Deniz Undav',team:'Germany',pos:'ST',goals:3,assists:2},
+  {name:'Johan Manzambi',team:'Switzerland',pos:'CM',goals:3,assists:1},
+  {name:'Matheus Cunha',team:'Brazil',pos:'ST',goals:3,assists:0},
+  {name:'Santiago Gimenez',team:'Mexico',pos:'ST',goals:2,assists:2},
+  {name:'Christian Pulisic',team:'United States',pos:'LW',goals:2,assists:1},
+  {name:'Jamal Musiala',team:'Germany',pos:'CAM',goals:2,assists:1},
+  {name:'Harry Kane',team:'England',pos:'ST',goals:2,assists:0},
+  {name:'Lautaro Martinez',team:'Argentina',pos:'ST',goals:2,assists:0},
+  {name:'Rafael Leao',team:'Portugal',pos:'LW',goals:1,assists:2},
+  {name:'Jude Bellingham',team:'England',pos:'CAM',goals:1,assists:2},
+  {name:'Rodrygo',team:'Brazil',pos:'RW',goals:1,assists:1},
+  {name:'Florian Wirtz',team:'Germany',pos:'CAM',goals:1,assists:1}
+];
+const SCORERS_PAGE_SIZE = 10;
 const LEADERBOARD_DATA = [
   {title:'Top Goal Scorers (Career)',color:'var(--neon-mag)',rows:[
     {name:'Cristiano Ronaldo',flag:'pt',val:'130',extra:'Portugal'},
@@ -2577,6 +2644,8 @@ let activeTeamFilter = 'all';
 let activeDateFilter = 'today';
 let modalTeamName = null;
 let posFilter = 'all';
+let activeScorerRole = 'all';
+let activeScorerPage = 1;
 let squadSearchVal = '';
 const RESULTS_CACHE_KEY = 'wc26-match-results-v1';
 const WATCH_SITE_URL = 'https://sportzfytvlive.xyz/';
@@ -2686,7 +2755,7 @@ async function syncMatchResults(manual){
     if(manual) console.warn('Could not refresh match results',e);
   }finally{
     resultsSyncing=false;
-    renderFixtures();renderHeroScoreboard();renderStandings();
+    renderFixtures();renderHeroScoreboard();renderStandings();renderLeaderboard();
   }
 }
 
@@ -3100,13 +3169,114 @@ document.getElementById('playerModal').addEventListener('click',e=>{if(e.target=
 
 /* ========== LEADERBOARD ========== */
 function renderLeaderboard(){
-  document.getElementById('leaderGrid').innerHTML=LEADERBOARD_DATA.map(lb=>`
-    <div class="leader-card"><h4 style="color:${lb.color}">${lb.title}</h4>
-    ${lb.rows.map((r,i)=>`<div class="leader-row">
-      <span class="leader-rank">${i+1}</span>
-      <span class="leader-name">${flagImg(r.flag,'xs')} ${r.name} <span style="color:var(--text-low);font-size:11px">${r.extra}</span></span>
-      <span class="leader-val" style="color:${lb.color}">${r.val}</span>
-    </div>`).join('')}</div>`).join('');
+  const board=document.getElementById('leaderGrid');
+  if(!board) return;
+  const rows=getTopScorers().filter(p=>matchesScorerRole(p.pos,activeScorerRole));
+  const totalPages=Math.max(1,Math.ceil(rows.length/SCORERS_PAGE_SIZE));
+  activeScorerPage=Math.min(Math.max(1,activeScorerPage),totalPages);
+  const start=(activeScorerPage-1)*SCORERS_PAGE_SIZE;
+  const pageRows=rows.slice(start,start+SCORERS_PAGE_SIZE);
+  const end=start+pageRows.length;
+  const filters=SCORER_FILTERS.map(f=>`<button class="scorer-filter${activeScorerRole===f.key?' active':''}" type="button" onclick="setScorerFilter('${f.key}')">${f.label}</button>`).join('');
+  const body=pageRows.length?pageRows.map((p,i)=>{
+    const cp=colourPair(p.team);
+    return `<tr>
+      <td class="scorer-rank">${start+i+1}</td>
+      <td>
+        <div class="scorer-player">
+          <span class="scorer-avatar"><img class="player-photo scorer-photo" src="${makeAvatarSVG(p.name,cp[0],96)}" data-player-name="${escapeHTML(p.name)}" data-player-color="${escapeHTML(cp[0])}" alt="${escapeHTML(p.name)}">${teamFlagImg(p.team,'xs')}</span>
+          <span class="scorer-info"><span class="scorer-name">${escapeHTML(p.name)}</span><span class="scorer-meta">Assists: ${p.assists||0}</span></span>
+        </div>
+      </td>
+      <td><span class="scorer-team">${teamFlagImg(p.team,'xs')} ${escapeHTML(p.team)}</span></td>
+      <td><span class="scorer-pos">${escapeHTML(p.pos)}</span></td>
+      <td><span class="scorer-goals">${p.goals}</span></td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="5"><div class="scorer-empty">NO SCORERS FOUND</div></td></tr>';
+  board.innerHTML=`
+    <div class="scorer-board-head">
+      <div class="scorer-title"><span class="scorer-title-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M5 6H3v1a4 4 0 0 0 4 4"/><path d="M19 6h2v1a4 4 0 0 1-4 4"/></svg></span><div><h3>Top Scorer</h3><span>FIFA World Cup 2026 - Player Stats</span></div></div>
+      <div class="scorer-season">2026</div>
+    </div>
+    <div class="scorer-filters">${filters}</div>
+    <div class="scorer-table-wrap">
+      <table class="scorer-table">
+        <thead><tr><th>#</th><th>Player</th><th>Country</th><th>Role</th><th>Goals</th></tr></thead>
+        <tbody>${body}</tbody>
+      </table>
+    </div>
+    <div class="scorer-pagination">
+      <span class="scorer-page-info">${rows.length?'Showing '+(start+1)+'-'+end+' of '+rows.length:'No players'}</span>
+      <div class="scorer-page-actions">
+        <button class="scorer-page-btn" type="button" onclick="setScorerPage(${activeScorerPage-1})" ${activeScorerPage===1?'disabled':''} aria-label="Previous scorer page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+        <span class="scorer-page-info">${activeScorerPage} / ${totalPages}</span>
+        <button class="scorer-page-btn" type="button" onclick="setScorerPage(${activeScorerPage+1})" ${activeScorerPage===totalPages?'disabled':''} aria-label="Next scorer page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+    </div>`;
+  hydrateScorerImages();
+}
+function getTopScorers(){
+  const live={};
+  Object.values(matchResults||{}).forEach(result=>{
+    (result.scorers||[]).forEach(s=>{
+      if(s.ownGoal) return;
+      const teamName=resolveTeamName(s.team);
+      const key=normalizeTeamName(s.name)+'|'+normalizeTeamName(teamName);
+      if(!live[key]){
+        const squad=SQUADS[teamName];
+        const player=squad&&squad.players.find(p=>normalizeTeamName(p.name)===normalizeTeamName(s.name));
+        live[key]={name:s.name,team:teamName,pos:mapScorerRole(player&&player.pos),goals:0,assists:0};
+      }
+      live[key].goals++;
+    });
+  });
+  const liveRows=Object.values(live).filter(p=>p.goals>0);
+  const source=liveRows.length?liveRows:TOP_SCORERS_FALLBACK;
+  return source.slice().sort((a,b)=>b.goals-a.goals||b.assists-a.assists||a.name.localeCompare(b.name));
+}
+function mergeScorerRows(seed,liveRows){
+  const byKey={};
+  seed.forEach(p=>{byKey[normalizeTeamName(p.name)+'|'+normalizeTeamName(p.team)]={...p};});
+  liveRows.forEach(p=>{
+    const key=normalizeTeamName(p.name)+'|'+normalizeTeamName(p.team);
+    byKey[key]={...(byKey[key]||p),...p,goals:p.goals};
+  });
+  return Object.values(byKey);
+}
+function resolveTeamName(team){
+  const key=normalizeTeamName(team);
+  return ALL_TEAM_NAMES.find(name=>normalizeTeamName(name)===key)||team||'TBD';
+}
+function mapScorerRole(pos){
+  if(!pos) return 'ST';
+  if(['ST','CF','FW'].includes(pos)) return 'ST';
+  if(['LW','RW'].includes(pos)) return pos;
+  if(pos==='WF') return 'LW';
+  if(['CAM','AM'].includes(pos)) return 'CAM';
+  if(['CM','CDM','DM','MF'].includes(pos)) return 'CM';
+  if(['LB','RB','LWB','RWB','FB'].includes(pos)) return 'FB';
+  if(['CB','DF','DEF'].includes(pos)) return 'CB';
+  if(pos==='GK') return 'GK';
+  return pos;
+}
+function matchesScorerRole(pos,role){
+  if(role==='all') return true;
+  if(role==='WING') return pos==='LW'||pos==='RW';
+  return pos===role;
+}
+function setScorerFilter(role){
+  activeScorerRole=role;
+  activeScorerPage=1;
+  renderLeaderboard();
+}
+function setScorerPage(page){
+  activeScorerPage=page;
+  renderLeaderboard();
+}
+function hydrateScorerImages(){
+  document.querySelectorAll('.scorer-photo').forEach(img=>{
+    requestPlayerImage(img,img.dataset.playerName,img.dataset.playerColor||'var(--accent)');
+  });
 }
 
 /* ========== INIT ========== */
