@@ -3511,6 +3511,12 @@ function drawR32Connectors(){
   svg.setAttribute('height',height);
   svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
   const paths=[];
+  const matchEl=id=>document.querySelector(`.r32-match[data-match="${id}"]`);
+  const slotEl=(id,index)=>{
+    const el=matchEl(id);
+    if(!el) return null;
+    return el.querySelectorAll('.r32-slot')[index]||el;
+  };
   const addPath=(fromEl,toEl,cls,offset,fromSide,toSide)=>{
     if(!fromEl||!toEl) return;
     const fromRect=fromEl.getBoundingClientRect();
@@ -3520,20 +3526,23 @@ function drawR32Connectors(){
     const b=r32Point(toEl,layout,toSide||(fromLeft?'left':'right'));
     paths.push(`<path class="r32-connector-path${cls?' '+cls:''}" d="${r32ElbowPath(a,b,offset)}"></path>`);
   };
-  const addCenterPath=(from,to,side,toThird)=>{
-    const fromEl=document.querySelector(`.r32-match[data-match="${from}"]`);
-    const toEl=document.querySelector(`.r32-match[data-match="${to}"]`);
+  const addCenterPath=(from,to,side,toThird,targetSlotIndex)=>{
+    const fromEl=matchEl(from);
+    const toEl=slotEl(to,targetSlotIndex);
     if(!fromEl||!toEl) return;
     const a=r32Point(fromEl,layout,side);
     const b=r32Point(toEl,layout,side);
     paths.push(`<path class="r32-connector-path" d="${r32CenterPath(a,b,side,toThird)}"></path>`);
   };
+  const targetSlotCounts={};
   R32_MATCH_LINKS.forEach(([from,to])=>{
+    const targetSlotIndex=targetSlotCounts[to]||0;
+    targetSlotCounts[to]=targetSlotIndex+1;
     const sameCenter=(from===101||from===102)&&(to===104||to===103);
     if(sameCenter){
-      addCenterPath(from,to,from===101?'left':'right',to===103);
+      addCenterPath(from,to,from===101?'left':'right',to===103,targetSlotIndex);
     }else{
-      addPath(document.querySelector(`.r32-match[data-match="${from}"]`),document.querySelector(`.r32-match[data-match="${to}"]`),'',0);
+      addPath(matchEl(from),slotEl(to,targetSlotIndex),'',0);
     }
   });  
   svg.innerHTML=paths.join('');
