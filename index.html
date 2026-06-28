@@ -2763,6 +2763,67 @@ function normalizeTeamName(name){
   const key=String(name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
   return aliases[key]||key;
 }
+const KNOCKOUT_SLOT_SOURCES={
+  89:['Winner M-74','Winner M-77'],
+  90:['Winner M-73','Winner M-75'],
+  91:['Winner M-76','Winner M-78'],
+  92:['Winner M-79','Winner M-80'],
+  93:['Winner M-83','Winner M-84'],
+  94:['Winner M-81','Winner M-82'],
+  95:['Winner M-86','Winner M-88'],
+  96:['Winner M-85','Winner M-87'],
+  97:['Winner M-89','Winner M-90'],
+  98:['Winner M-93','Winner M-94'],
+  99:['Winner M-91','Winner M-92'],
+  100:['Winner M-95','Winner M-96'],
+  101:['Winner M-97','Winner M-98'],
+  102:['Winner M-99','Winner M-100'],
+  103:['Loser M-101','Loser M-102'],
+  104:['Winner M-101','Winner M-102']
+};
+function knockoutResultTeam(matchId,type,fixturesById){
+  const fixture=fixturesById[matchId];
+  const result=matchResults[matchId];
+  if(!fixture||!result||!result.completed) return null;
+  const homeWins=result.homeWinner||(!result.awayWinner&&result.homeScore>result.awayScore);
+  const awayWins=result.awayWinner||(!result.homeWinner&&result.awayScore>result.homeScore);
+  if(type==='Winner'){
+    if(homeWins) return fixture.home&&fixture.home!=='TBD'?fixture.home:null;
+    if(awayWins) return fixture.away&&fixture.away!=='TBD'?fixture.away:null;
+  }else{
+    if(homeWins) return fixture.away&&fixture.away!=='TBD'?fixture.away:null;
+    if(awayWins) return fixture.home&&fixture.home!=='TBD'?fixture.home:null;
+  }
+  return null;
+}
+function resolveKnockoutSlot(label,fixturesById,seen){
+  const match=String(label||'').match(/^(Winner|Loser)\s+M-(\d+)$/);
+  if(!match) return null;
+  const type=match[1];
+  const matchId=Number(match[2]);
+  resolveFixtureTeams(fixturesById[matchId],fixturesById,seen);
+  return knockoutResultTeam(matchId,type,fixturesById);
+}
+function resolveFixtureTeams(fixture,fixturesById,seen){
+  if(!fixture||seen.has(fixture.id)) return fixture;
+  seen.add(fixture.id);
+  const sources=KNOCKOUT_SLOT_SOURCES[fixture.id];
+  if(!sources) return fixture;
+  const home=resolveKnockoutSlot(sources[0],fixturesById,seen);
+  const away=resolveKnockoutSlot(sources[1],fixturesById,seen);
+  if(home) fixture.home=home;
+  if(away) fixture.away=away;
+  return fixture;
+}
+function getResolvedFixtures(){
+  const fixtures=FIXTURES.map(f=>({...f}));
+  const byId=Object.fromEntries(fixtures.map(f=>[f.id,f]));
+  fixtures.forEach(f=>resolveFixtureTeams(f,byId,new Set()));
+  return fixtures;
+}
+function getResolvedFixtureById(id){
+  return getResolvedFixtures().find(f=>f.id===id);
+}
 function compactDate(d){return d.getUTCFullYear()+String(d.getUTCMonth()+1).padStart(2,'0')+String(d.getUTCDate()).padStart(2,'0');}
 function findFixtureForApiEvent(event){
   const competition=event&&event.competitions&&event.competitions[0];
@@ -2773,7 +2834,7 @@ function findFixtureForApiEvent(event){
   if(!home||!away) return null;
   const apiHome=normalizeTeamName(home.team&&home.team.displayName);
   const apiAway=normalizeTeamName(away.team&&away.team.displayName);
-  return FIXTURES.find(f=>{
+  return getResolvedFixtures().find(f=>{
     const sameTeams=normalizeTeamName(f.home)===apiHome&&normalizeTeamName(f.away)===apiAway;
     const closeTime=Math.abs(new Date(f.utc)-new Date(event.date))<36*60*60*1000;
     return sameTeams&&closeTime;
@@ -2842,7 +2903,7 @@ async function syncMatchResults(manual){
     if(manual) console.warn('Could not refresh match results',e);
   }finally{
     resultsSyncing=false;
-    renderFixtures();renderHeroScoreboard();renderRound32Tracker();renderStandings();renderLeaderboard();
+    renderPills();renderDateStrip();renderFixtures();renderHeroScoreboard();renderRound32Tracker();renderStandings();renderLeaderboard();
   }
 }
 
@@ -2916,7 +2977,8 @@ document.getElementById('hamburger').addEventListener('click',()=>document.getEl
 /* ========== PILLS (stage + team filter) ========== */
 function renderPills(){
   const stages=[{k:'ko',l:'Knockout Stage'}];
-  const fixtureTeams=[...new Set(FIXTURES.filter(f=>f.stage==='ko'&&f.home!=='TBD'&&f.away!=='TBD').flatMap(f=>[f.home,f.away]))].sort();
+  const resolvedFixtures=getResolvedFixtures();
+  const fixtureTeams=[...new Set(resolvedFixtures.filter(f=>f.stage==='ko'&&f.home!=='TBD'&&f.away!=='TBD').flatMap(f=>[f.home,f.away]))].sort();
   const stageButtons=stages.map(s=>`<button class="pill${activeStage===s.k?' active':''}" onclick="setStage('${s.k}')">${s.l}</button>`).join('');
   const teamButtons=`<button class="pill${activeTeamFilter==='all'?' active':''}" onclick="setTeamFilter('all')">All Teams</button>`
     +fixtureTeams.map(t=>`<button class="pill${activeTeamFilter===t?' active':''}" onclick="setTeamFilter('${t.replace(/'/g,"\\'")}')">${teamFlagImg(t,'xs')} ${t}</button>`).join('');
@@ -3004,7 +3066,7 @@ function shouldShowWatchButton(fixture,result,now){
 
 function renderFixtures(){
   const grid=document.getElementById('fixturesGrid');
-  let list=[...FIXTURES];
+  let list=getResolvedFixtures();
   if(activeStage!=='all') list=list.filter(f=>f.stage===activeStage);
   if(activeTeamFilter!=='all') list=list.filter(f=>f.home===activeTeamFilter||f.away===activeTeamFilter);
   const selectedDate=resolvedDateFilter();
@@ -3144,7 +3206,7 @@ function renderR32Matches(){
   }).join('');
 }
 function renderR32Match(id){
-  const f=FIXTURES.find(x=>x.id===id);
+  const f=getResolvedFixtureById(id);
   if(!f) return '';
   const result=matchResults[id];
   const status=r32MatchStatus(f,result);
@@ -3155,7 +3217,7 @@ function renderR32Match(id){
   </div>`;
 }
 function renderR32CompactMatch(id){
-  const f=FIXTURES.find(x=>x.id===id);
+  const f=getResolvedFixtureById(id);
   if(!f) return '';
   const result=matchResults[id];
   return `<div class="r32-match r32-center-item${id===104?' r32-final-box':''}" data-match="${id}" style="${r32GridStyle(R32_MATCH_POS[id])}">
@@ -3174,24 +3236,7 @@ function r32Label(f){
   if(id===104) return 'FINAL - M-104';
   return f.label||f.group||('M-'+id);
 }
-const R32_SLOT_PROVENANCE={
-  89:['Winner M-74','Winner M-77'],
-  90:['Winner M-73','Winner M-75'],
-  91:['Winner M-76','Winner M-78'],
-  92:['Winner M-79','Winner M-80'],
-  93:['Winner M-83','Winner M-84'],
-  94:['Winner M-81','Winner M-82'],
-  95:['Winner M-86','Winner M-88'],
-  96:['Winner M-85','Winner M-87'],
-  97:['Winner M-89','Winner M-90'],
-  98:['Winner M-93','Winner M-94'],
-  99:['Winner M-91','Winner M-92'],
-  100:['Winner M-95','Winner M-96'],
-  101:['Winner M-97','Winner M-98'],
-  102:['Winner M-99','Winner M-100'],
-  103:['Loser M-101','Loser M-102'],
-  104:['Winner M-101','Winner M-102']
-};
+const R32_SLOT_PROVENANCE=KNOCKOUT_SLOT_SOURCES;
 function r32SlotLabel(f,side){
   const source=R32_SLOT_PROVENANCE[f.id];
   if(source) return side==='home'?source[0]:source[1];
@@ -3523,7 +3568,7 @@ function updateFeaturedCountdown(){
 }
 function renderHeroScoreboard(){
   const nowUTC=new Date();
-  const real=FIXTURES.filter(f=>f.home!=='TBD').sort((a,b)=>new Date(a.utc)-new Date(b.utc));
+  const real=getResolvedFixtures().filter(f=>f.home!=='TBD'&&f.away!=='TBD').sort((a,b)=>new Date(a.utc)-new Date(b.utc));
   const liveFixture=real.find(f=>matchResults[f.id]&&matchResults[f.id].state==='in');
   const f=liveFixture||real.find(f=>new Date(f.utc)>=nowUTC)||[...real].reverse().find(f=>matchResults[f.id]&&matchResults[f.id].completed)||real[real.length-1];
   featuredFixture=f;
