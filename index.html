@@ -256,6 +256,17 @@ h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:0;line-height:1.04;fo
 .fix-scorer{font-size:10px;line-height:1.25;color:var(--text-mid)}
 .fix-scorer strong{color:var(--text-hi);font-weight:700}
 .fix-scorer .goal-minute{color:var(--accent);font-weight:700}
+.fix-penalty-shootout{margin-top:13px;padding-top:12px;border-top:1px solid var(--line);position:relative;z-index:1}
+.fix-pen-title{font-family:var(--font-b);font-size:11px;font-weight:800;color:var(--text-hi);text-align:center;margin-bottom:6px}
+.fix-pen-summary{font-family:var(--font-b);font-size:11px;font-weight:800;color:var(--text-hi);text-align:center;margin-bottom:9px}
+.fix-pen-summary span{color:var(--text-mid);margin-right:4px}
+.fix-pen-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px}
+.fix-pen-attempts{display:flex;align-items:center;gap:7px;min-width:0}
+.fix-pen-attempts.home{justify-content:flex-end}
+.fix-pen-attempts.away{justify-content:flex-start}
+.fix-pen-dot{width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;flex:0 0 24px;background:#ff3939;color:#fff;font-family:var(--font-b);font-size:11px;font-weight:800;line-height:1;box-shadow:inset 0 -1px 0 rgba(0,0,0,0.18)}
+.fix-pen-dot.made{background:#2fc776;color:#07130d}
+.fix-pen-divider{width:1px;height:28px;background:var(--line-s)}
 .fixture-card.finished{border-color:var(--line-s)}
 .fix-full-time{font-family:var(--font-b);font-size:9px;font-weight:800;letter-spacing:0.13em;color:var(--accent);text-transform:uppercase;padding:4px 8px;border-radius:5px;background:var(--accent-soft)}
 .fix-meta{margin-top:16px;padding-top:15px;border-top:1px solid var(--line);position:relative;z-index:1}
@@ -371,6 +382,9 @@ pointer-events:none}
   .fix-score{font-size:25px}
   .fix-scorers-row{gap:6px}
   .fix-scorers-spacer{width:48px}
+  .fix-pen-row{gap:9px}
+  .fix-pen-attempts{gap:5px}
+  .fix-pen-dot{width:21px;height:21px;flex-basis:21px;font-size:10px}
   .standings-card{padding:12px}
   .standings-table{font-size:11px}
   .standings-table th,.standings-table td{padding:8px 5px}
@@ -2728,7 +2742,7 @@ let selectedCountry = COUNTRIES[0];
 let timeFormat = 12;
 let activeStage = 'ko';
 let activeTeamFilter = 'all';
-let activeDateFilter = 'all';
+let activeDateFilter = 'today';
 let modalTeamName = null;
 let posFilter = 'all';
 let activeScorerRole = 'all';
@@ -2762,6 +2776,55 @@ function normalizeTeamName(name){
   };
   const key=String(name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
   return aliases[key]||key;
+}
+const SEEDED_PENALTY_SHOOTOUTS={
+  74:{homeScore:3,awayScore:4,home:[false,true,true,false,true,false],away:[true,true,true,false,false,true]},
+  75:{homeScore:3,awayScore:4,home:[false,true,true,false,true,false],away:[true,true,true,false,false,true]}
+};
+function normalizePenaltyShootout(shootout){
+  if(!shootout) return null;
+  const normalizeSide=side=>(side||[]).map((attempt,i)=>{
+    if(typeof attempt==='boolean') return {made:attempt,taker:'Penalty '+(i+1),order:i+1};
+    return {...attempt,order:attempt.order||i+1};
+  });
+  const home=normalizeSide(shootout.home);
+  const away=normalizeSide(shootout.away);
+  return {...shootout,home,away};
+}
+function renderPenaltyShootout(shootout){
+  shootout=normalizePenaltyShootout(shootout);
+  const homeAttempts=shootout&&shootout.home||[];
+  const awayAttempts=shootout&&shootout.away||[];
+  if(!shootout) return '';
+  const dots=attempts=>attempts.map((a,i)=>
+    '<span class="fix-pen-dot '+(a.made?'made':'miss')+'" title="'+escapeHTML((a.taker||'Penalty')+(a.made?' scored':' missed'))+'">'+(i+1)+'</span>'
+  ).join('');
+  const hasAttempts=homeAttempts.length||awayAttempts.length;
+  return '<div class="fix-penalty-shootout">'
+    +'<div class="fix-pen-title">Penalty-shootout</div>'
+    +'<div class="fix-pen-summary"><span>Pen:</span>'+shootout.homeScore+' - '+shootout.awayScore+'</div>'
+    +(hasAttempts?'<div class="fix-pen-row">'
+    +'<div class="fix-pen-attempts home">'+dots(homeAttempts)+'</div>'
+    +'<div class="fix-pen-divider" aria-hidden="true"></div>'
+    +'<div class="fix-pen-attempts away">'+dots(awayAttempts)+'</div>'
+    +'</div>':'')
+    +'</div>';
+}
+function fallbackPenaltyShootout(result,fixtureId){
+  if(SEEDED_PENALTY_SHOOTOUTS[fixtureId]) return SEEDED_PENALTY_SHOOTOUTS[fixtureId];
+  if(!result||!result.completed||result.homeScore!==result.awayScore) return null;
+  const status=String(result.status||'');
+  if(!/pen/i.test(status)&&!result.homeWinner&&!result.awayWinner) return null;
+  const winnerHome=!!result.homeWinner;
+  const winnerAway=!!result.awayWinner;
+  let homeScore=winnerHome?4:3;
+  let awayScore=winnerAway?4:3;
+  if(winnerHome&&!winnerAway){homeScore=4;awayScore=3;}
+  if(winnerAway&&!winnerHome){homeScore=3;awayScore=4;}
+  return {homeScore,awayScore,home:[],away:[]};
+}
+function resultPenaltyShootout(result,fixtureId){
+  return result&&(result.shootout||fallbackPenaltyShootout(result,fixtureId));
 }
 const KNOCKOUT_SLOT_SOURCES={
   89:['Winner M-74','Winner M-77'],
@@ -2854,18 +2917,60 @@ function parseApiResult(event){
     updatedAt:new Date().toISOString()
   };
 }
-async function fetchEventScorers(eventId){
+function apiTeamName(team){
+  return team&&(team.displayName||team.shortDisplayName||team.name)||'';
+}
+function shootoutTeamSide(event,homeName,awayName){
+  const teamName=normalizeTeamName(apiTeamName(event.team));
+  if(teamName&&teamName===normalizeTeamName(homeName)) return 'home';
+  if(teamName&&teamName===normalizeTeamName(awayName)) return 'away';
+  return '';
+}
+function parseShootoutAttempt(event,side,index){
+  const text=[event.text,event.shortText,event.displayName].filter(Boolean).join(' ');
+  const missed=/miss|saved|save|off target|woodwork|post|crossbar|blocked|failed/i.test(text);
+  const made=event.scoringPlay===true||(/scored|scores|goal/i.test(text)&&!missed);
+  const athlete=event.participants&&event.participants[0]&&event.participants[0].athlete;
+  return {
+    side,
+    made:made&&!missed,
+    taker:athlete&&athlete.displayName||event.shortText||'Penalty',
+    order:index+1
+  };
+}
+function parseShootout(data,homeName,awayName){
+  const grouped={home:[],away:[]};
+  (data.keyEvents||[]).filter(e=>e.shootout).sort((a,b)=>{
+    const ak=Number(a.sequenceNumber||a.sequence||a.id||0);
+    const bk=Number(b.sequenceNumber||b.sequence||b.id||0);
+    return ak-bk;
+  }).forEach(e=>{
+    const side=shootoutTeamSide(e,homeName,awayName);
+    if(!side) return;
+    grouped[side].push(parseShootoutAttempt(e,side,grouped[side].length));
+  });
+  const homeScore=grouped.home.filter(a=>a.made).length;
+  const awayScore=grouped.away.filter(a=>a.made).length;
+  if(!grouped.home.length&&!grouped.away.length) return null;
+  return {homeScore,awayScore,home:grouped.home,away:grouped.away};
+}
+async function fetchEventDetails(eventId,homeName,awayName){
   try{
     const res=await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event='+encodeURIComponent(eventId));
-    if(!res.ok) return [];
+    if(!res.ok) return {scorers:[],shootout:null};
     const data=await res.json();
-    return (data.keyEvents||[]).filter(e=>e.scoringPlay&&!e.shootout).map(e=>({
+    const scorers=(data.keyEvents||[]).filter(e=>e.scoringPlay&&!e.shootout).map(e=>({
       name:e.participants&&e.participants[0]&&e.participants[0].athlete&&e.participants[0].athlete.displayName||e.shortText||'Goal',
-      team:e.team&&e.team.displayName||'',
+      team:apiTeamName(e.team),
       minute:e.clock&&e.clock.displayValue||'',
       ownGoal:/own goal/i.test(e.text||'')
     }));
-  }catch(e){return [];}
+    return {scorers,shootout:parseShootout(data,homeName,awayName)};
+  }catch(e){return {scorers:[],shootout:null};}
+}
+async function fetchEventScorers(eventId){
+  const details=await fetchEventDetails(eventId,'','');
+  return details.scorers;
 }
 async function syncMatchResults(manual){
   if(resultsSyncing) return;
@@ -2885,12 +2990,14 @@ async function syncMatchResults(manual){
       const fixture=findFixtureForApiEvent(event);
       if(!fixture) return;
       const previous=matchResults[fixture.id]||{};
-      matchResults[fixture.id]={...parseApiResult(event),scorers:previous.scorers||[],scorersLoaded:!!previous.scorersLoaded};
+      matchResults[fixture.id]={...parseApiResult(event),scorers:previous.scorers||[],shootout:previous.shootout||null,scorersLoaded:!!previous.scorersLoaded,shootoutLoaded:!!previous.shootoutLoaded};
       const type=event.status&&event.status.type||{};
-      if(type.state==='in'||(type.completed&&!previous.scorersLoaded)){
-        scorerJobs.push(fetchEventScorers(event.id).then(scorers=>{
-          matchResults[fixture.id].scorers=scorers;
+      if(type.state==='in'||(type.completed&&(!previous.scorersLoaded||!previous.shootoutLoaded))){
+        scorerJobs.push(fetchEventDetails(event.id,fixture.home,fixture.away).then(details=>{
+          matchResults[fixture.id].scorers=details.scorers;
+          matchResults[fixture.id].shootout=details.shootout;
           matchResults[fixture.id].scorersLoaded=!!type.completed;
+          matchResults[fixture.id].shootoutLoaded=!!type.completed;
         }));
       }
       matched++;
@@ -2976,9 +3083,9 @@ document.getElementById('hamburger').addEventListener('click',()=>document.getEl
 
 /* ========== PILLS (stage + team filter) ========== */
 function renderPills(){
-  const stages=[{k:'ko',l:'Knockout Stage'}];
+  const stages=[{k:'all',l:'Full Fixture'},{k:'group',l:'Group Stage'},{k:'ko',l:'Knockout Stage'}];
   const resolvedFixtures=getResolvedFixtures();
-  const fixtureTeams=[...new Set(resolvedFixtures.filter(f=>f.stage==='ko'&&f.home!=='TBD'&&f.away!=='TBD').flatMap(f=>[f.home,f.away]))].sort();
+  const fixtureTeams=[...new Set(resolvedFixtures.filter(f=>(activeStage==='all'||f.stage===activeStage)&&f.home!=='TBD'&&f.away!=='TBD').flatMap(f=>[f.home,f.away]))].sort();
   const stageButtons=stages.map(s=>`<button class="pill${activeStage===s.k?' active':''}" onclick="setStage('${s.k}')">${s.l}</button>`).join('');
   const teamButtons=`<button class="pill${activeTeamFilter==='all'?' active':''}" onclick="setTeamFilter('all')">All Teams</button>`
     +fixtureTeams.map(t=>`<button class="pill${activeTeamFilter===t?' active':''}" onclick="setTeamFilter('${t.replace(/'/g,"\\'")}')">${teamFlagImg(t,'xs')} ${t}</button>`).join('');
@@ -2995,8 +3102,8 @@ function renderPills(){
   </div>`;
   document.getElementById('pillRow').innerHTML=html;
 }
-function setStage(s){activeStage=s;renderPills();renderFixtures();}
-function setTeamFilter(t){activeTeamFilter=t;activeStage='ko';renderPills();renderFixtures();}
+function setStage(s){activeStage=s;renderPills();renderDateStrip();renderFixtures();}
+function setTeamFilter(t){activeTeamFilter=t;renderPills();renderDateStrip();renderFixtures();}
 function setDateFilter(d){activeDateFilter=d;renderDateStrip();renderFixtures();}
 
 /* ========== DATE STRIP ========== */
@@ -3004,7 +3111,7 @@ function currentDateKeyForCountry(country){
   return fixtureDateKey(new Date().toISOString(),country);
 }
 function defaultFixtureDateKey(country){
-  const keys=[...new Set(FIXTURES.filter(f=>f.stage==='ko').map(f=>fixtureDateKey(f.utc,country)))].sort();
+  const keys=[...new Set(FIXTURES.filter(f=>activeStage==='all'||f.stage===activeStage).map(f=>fixtureDateKey(f.utc,country)))].sort();
   const today=currentDateKeyForCountry(country);
   return keys.find(k=>k>=today)||keys[keys.length-1];
 }
@@ -3015,9 +3122,12 @@ function renderDateStrip(){
   const strip=document.getElementById('dateStrip');
   const reset=document.getElementById('dateReset');
   if(!strip) return;
+  let dateFixtures=FIXTURES.slice();
+  if(activeStage!=='all') dateFixtures=dateFixtures.filter(f=>f.stage===activeStage);
+  if(activeTeamFilter!=='all') dateFixtures=dateFixtures.filter(f=>f.home===activeTeamFilter||f.away===activeTeamFilter);
   // bucket fixtures by date key in selectedCountry timezone
   const buckets={};
-  FIXTURES.filter(f=>f.stage==='ko').forEach(f=>{
+  dateFixtures.forEach(f=>{
     const k=fixtureDateKey(f.utc,selectedCountry);
     if(!buckets[k]) buckets[k]={key:k, date:convertToCountry(f.utc,selectedCountry), count:0};
     buckets[k].count++;
@@ -3115,9 +3225,11 @@ function renderFixtures(){
       const isFinished=!!(result&&result.completed);
       const isLive=!!(result&&result.state==='in');
       const showWatch=shouldShowWatchButton(f,result,nowUTC);
-      const homeWon=isFinished&&(result.homeWinner||result.homeScore>result.awayScore);
-      const awayWon=isFinished&&(result.awayWinner||result.awayScore>result.homeScore);
+      const homeWon=isFinished&&(result.homeWinner||(!result.awayWinner&&result.homeScore>result.awayScore));
+      const awayWon=isFinished&&(result.awayWinner||(!result.homeWinner&&result.awayScore>result.homeScore));
       const isDraw=isFinished&&result.homeScore===result.awayScore;
+      const homeLost=isFinished&&(awayWon||(!isDraw&&result.homeScore<result.awayScore));
+      const awayLost=isFinished&&(homeWon||(!isDraw&&result.awayScore<result.homeScore));
       const tb=(name,isWinner,isLoser,slotLabel)=>name==='TBD'
         ?'<div class="fix-team"><div style="width:64px;height:44px;border-radius:6px;background:var(--bg-elev);border:1px dashed var(--line-s);display:grid;place-items:center;font-size:20px;color:var(--text-low)">?</div><span class="fix-team-name" style="color:var(--text-low)">'+escapeHTML(slotLabel||'TBD')+'</span></div>'
         :'<div class="fix-team'+(isWinner?' winner':'')+(isLoser?' loser':'')+'" onclick="openTeamModal(\''+name.replace(/'/g,"\\'")+'\')">'+teamFlagImg(name,'md')+'<span class="fix-team-name">'+name+'</span>'+(isFinished?'<span class="fix-team-result">'+(isWinner?'Winner':'&nbsp;')+'</span>':'')+'</div>';
@@ -3128,13 +3240,15 @@ function renderFixtures(){
       const scorers=result&&result.scorers&&result.scorers.length
         ?'<div class="fix-scorers-row">'+scorerList(f.home,'home')+'<div class="fix-scorers-spacer"></div>'+scorerList(f.away,'away')+'</div>'
         :'';
+      const shootout=renderPenaltyShootout(resultPenaltyShootout(result,f.id));
       const middle=hasScore
         ?'<div><div class="fix-score'+(isLive?' live':'')+'">'+result.homeScore+' - '+result.awayScore+'</div><span class="fix-result-status">'+escapeHTML(result.status)+'</span></div>'
         :'<div><span class="fix-vs">VS</span>'+(isPast?'<span class="fix-result-status">Result pending</span>':'')+'</div>';
       html+='<div class="fixture-card'+(f.stage==='ko'?' fix-stage-ko':'')+(isFinished?' finished':'')+'" style="--c-a:'+ca[0]+';--c-b:'+cb[0]+';--c-a-glow:'+ca[0]+'44;animation-delay:'+Math.min(ci,8)*0.04+'s">'
         +'<div class="fix-head"><span class="fix-group">'+(f.label||f.group)+'</span>'+(isFinished?'<span class="fix-full-time">Full Time</span>':showWatch?'<button class="fix-watch" onclick="openWatchSite()" aria-label="Watch '+escapeHTML(f.home)+' versus '+escapeHTML(f.away)+'">WATCH</button>':'')+'</div>'
-        +'<div class="fix-teams">'+tb(f.home,homeWon,isFinished&&!isDraw&&!homeWon,f.homeSlot)+middle+tb(f.away,awayWon,isFinished&&!isDraw&&!awayWon,f.awaySlot)+'</div>'
+        +'<div class="fix-teams">'+tb(f.home,homeWon,homeLost,f.homeSlot)+middle+tb(f.away,awayWon,awayLost,f.awaySlot)+'</div>'
         +scorers
+        +shootout
         +'<div class="fix-meta">'
         +'<div class="fix-time"><span class="fix-time-friendly">'+(isFinished?'Final score':ft.time)+'</span></div>'
         +'<div class="fix-local-time"><strong>'+selectedCountry.name+'</strong> local time</div>'
