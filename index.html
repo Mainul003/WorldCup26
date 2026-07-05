@@ -490,6 +490,7 @@ pointer-events:none}
 .scorer-team{display:flex;align-items:center;gap:8px;color:var(--text-mid);font-size:13px;font-weight:600;white-space:nowrap}
 .scorer-pos{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:4px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:800;letter-spacing:0.08em}
 .scorer-goals{font-family:var(--font-d);font-size:26px;font-weight:700;color:var(--accent);line-height:1}
+.scorer-assists{font-family:var(--font-d);font-size:22px;font-weight:600;color:var(--text-mid);line-height:1}
 .scorer-empty{padding:34px;text-align:center;color:var(--text-low);font-family:var(--font-d);font-size:22px;letter-spacing:0.08em}
 .scorer-pagination{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 22px;border-top:1px solid var(--line);background:var(--bg-elev)}
 .scorer-page-info{color:var(--text-low);font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
@@ -1318,1363 +1319,30 @@ Object.assign(TEAM_FLAG_CODES, {
   'Nigeria':'ng', 'USA':'us',
 });
 
-/* ========== SQUADS (keep existing ones, add missing real teams) ========== */
-const SQUADS = {
-  'Czechia':{coach:'Miroslav Koubek',style:'4-2-3-1',confederation:'UEFA',players:[
-    {n:1,name:'Matěj Kovář',pos:'GK',club:'PSV Eindhoven',age:26,caps:19,goals:0},
-    {n:2,name:'Jindřich Staněk',pos:'GK',club:'Slavia Prague',age:30,caps:14,goals:0},
-    {n:3,name:'Lukáš Horníček',pos:'GK',club:'Braga',age:23,caps:1,goals:0},
-    {n:4,name:'Vladimír Coufal',pos:'DF',club:'TSG Hoffenheim',age:33,caps:61,goals:2},
-    {n:5,name:'Tomáš Holeš',pos:'DF',club:'Slavia Prague',age:33,caps:40,goals:2},
-    {n:6,name:'Ladislav Krejčí',pos:'DF',club:'Wolverhampton',age:27,caps:26,goals:5,nick:'Captain'},
-    {n:7,name:'David Zima',pos:'DF',club:'Slavia Prague',age:25,caps:24,goals:1},
-    {n:8,name:'Jaroslav Zelený',pos:'DF',club:'Sparta Prague',age:33,caps:22,goals:0},
-    {n:9,name:'David Jurásek',pos:'DF',club:'Slavia Prague',age:25,caps:17,goals:1},
-    {n:10,name:'David Douděra',pos:'DF',club:'Slavia Prague',age:28,caps:16,goals:2},
-    {n:11,name:'Robin Hranáč',pos:'DF',club:'TSG Hoffenheim',age:26,caps:13,goals:1},
-    {n:12,name:'Štěpán Chaloupek',pos:'DF',club:'Slavia Prague',age:23,caps:4,goals:0},
-    {n:13,name:'Tomáš Souček',pos:'MF',club:'West Ham United',age:31,caps:89,goals:17},
-    {n:14,name:'Vladimír Darida',pos:'MF',club:'Hradec Králové',age:35,caps:78,goals:8},
-    {n:15,name:'Lukáš Provod',pos:'MF',club:'Slavia Prague',age:29,caps:37,goals:3},
-    {n:16,name:'Michal Sadílek',pos:'MF',club:'Slavia Prague',age:27,caps:34,goals:1},
-    {n:17,name:'Pavel Šulc',pos:'MF',club:'Lyon',age:25,caps:20,goals:5},
-    {n:18,name:'Lukáš Červ',pos:'MF',club:'Viktoria Plzeň',age:25,caps:16,goals:2},
-    {n:19,name:'Hugo Sochůrek',pos:'MF',club:'Sparta Prague',age:18,caps:1,goals:0},
-    {n:20,name:'Alexandr Sojka',pos:'MF',club:'Viktoria Plzeň',age:23,caps:1,goals:0},
-    {n:21,name:'Denis Višinský',pos:'MF',club:'Viktoria Plzeň',age:23,caps:1,goals:0},
-    {n:22,name:'Patrik Schick',pos:'FW',club:'Bayer Leverkusen',age:30,caps:52,goals:25},
-    {n:23,name:'Adam Hložek',pos:'FW',club:'TSG Hoffenheim',age:23,caps:42,goals:5},
-    {n:24,name:'Jan Kuchta',pos:'FW',club:'Sparta Prague',age:29,caps:31,goals:3},
-    {n:25,name:'Mojmír Chytil',pos:'FW',club:'Slavia Prague',age:27,caps:22,goals:6},
-    {n:26,name:'Tomáš Chorý',pos:'FW',club:'Slavia Prague',age:31,caps:21,goals:6},
-  ]},
-  'Mexico':{coach:'Javier Aguirre',style:'4-4-2',confederation:'CONCACAF',players:[
-    {n:1,name:'Guillermo Ochoa',pos:'GK',club:'AEL Limassol',age:40,caps:152,goals:0,nick:'Memo'},
-    {n:2,name:'Raúl Rangel',pos:'GK',club:'Guadalajara',age:26,caps:13,goals:0},
-    {n:3,name:'Carlos Acevedo',pos:'GK',club:'Santos Laguna',age:30,caps:7,goals:0},
-    {n:4,name:'Jesús Gallardo',pos:'DF',club:'Toluca',age:31,caps:120,goals:3},
-    {n:5,name:'César Montes',pos:'DF',club:'Lokomotiv Moscow',age:29,caps:66,goals:4},
-    {n:6,name:'Jorge Sánchez',pos:'DF',club:'PAOK',age:28,caps:58,goals:3},
-    {n:7,name:'Johan Vásquez',pos:'DF',club:'Genoa',age:27,caps:45,goals:2},
-    {n:8,name:'Israel Reyes',pos:'DF',club:'América',age:26,caps:33,goals:2},
-    {n:9,name:'Mateo Chávez',pos:'DF',club:'AZ',age:22,caps:9,goals:0},
-    {n:10,name:'Edson Álvarez',pos:'MF',club:'Fenerbahçe',age:28,caps:97,goals:7,nick:'El Machín · Captain'},
-    {n:11,name:'Orbelín Pineda',pos:'MF',club:'AEK Athens',age:30,caps:91,goals:12},
-    {n:12,name:'Roberto Alvarado',pos:'MF',club:'Guadalajara',age:27,caps:66,goals:5},
-    {n:13,name:'Luis Romo',pos:'MF',club:'Guadalajara',age:31,caps:62,goals:4},
-    {n:14,name:'Luis Chávez',pos:'MF',club:'Dynamo Moscow',age:30,caps:44,goals:4},
-    {n:15,name:'Érik Lira',pos:'MF',club:'Cruz Azul',age:26,caps:24,goals:0},
-    {n:16,name:'Gilberto Mora',pos:'MF',club:'Tijuana',age:17,caps:7,goals:0},
-    {n:17,name:'Brian Gutiérrez',pos:'MF',club:'Guadalajara',age:22,caps:6,goals:2},
-    {n:18,name:'Obed Vargas',pos:'MF',club:'Atlético Madrid',age:20,caps:6,goals:0},
-    {n:19,name:'Álvaro Fidalgo',pos:'MF',club:'Real Betis',age:29,caps:3,goals:0},
-    {n:20,name:'Raúl Jiménez',pos:'FW',club:'Fulham',age:35,caps:123,goals:44,nick:'El Lobo'},
-    {n:21,name:'Alexis Vega',pos:'FW',club:'Toluca',age:28,caps:51,goals:7},
-    {n:22,name:'Santiago Giménez',pos:'FW',club:'Milan',age:25,caps:47,goals:6,nick:'Bebote'},
-    {n:23,name:'César Huerta',pos:'FW',club:'Anderlecht',age:25,caps:26,goals:3},
-    {n:24,name:'Julián Quiñones',pos:'FW',club:'Al-Qadsiah',age:29,caps:21,goals:2},
-    {n:25,name:'Guillermo Martínez',pos:'FW',club:'UNAM',age:31,caps:11,goals:3},
-    {n:26,name:'Armando González',pos:'FW',club:'Guadalajara',age:23,caps:7,goals:1},
-  ]},
-  'South Africa':{coach:'Hugo Broos',style:'4-3-3',confederation:'CAF',players:[
-    {n:1,name:'Ronwen Williams',pos:'GK',club:'Mamelodi Sundowns',age:34,caps:62,goals:0,nick:'Captain'},
-    {n:2,name:'Ricardo Goss',pos:'GK',club:'Siwelele',age:32,caps:4,goals:0},
-    {n:3,name:'Sipho Chaine',pos:'GK',club:'Orlando Pirates',age:29,caps:3,goals:0},
-    {n:4,name:'Aubrey Modiba',pos:'DF',club:'Mamelodi Sundowns',age:30,caps:44,goals:3},
-    {n:5,name:'Khuliso Mudau',pos:'DF',club:'Mamelodi Sundowns',age:31,caps:32,goals:1},
-    {n:6,name:'Nkosinathi Sibisi',pos:'DF',club:'Orlando Pirates',age:30,caps:19,goals:0},
-    {n:7,name:'Mbekezeli Mbokazi',pos:'DF',club:'Chicago Fire FC',age:20,caps:10,goals:1},
-    {n:8,name:'Ime Okon',pos:'DF',club:'Hannover 96',age:22,caps:7,goals:1},
-    {n:9,name:'Samukele Kabini',pos:'DF',club:'Molde',age:22,caps:5,goals:0},
-    {n:10,name:'Khulumani Ndamane',pos:'DF',club:'Mamelodi Sundowns',age:22,caps:5,goals:0},
-    {n:11,name:'Thabang Matuludi',pos:'DF',club:'Polokwane City',age:27,caps:2,goals:0},
-    {n:12,name:'Kamogelo Sebelebele',pos:'DF',club:'Orlando Pirates',age:23,caps:2,goals:0},
-    {n:13,name:'Bradley Cross',pos:'DF',club:'Kaizer Chiefs',age:25,caps:0,goals:0},
-    {n:14,name:'Olwethu Makhanya',pos:'DF',club:'Philadelphia Union',age:22,caps:0,goals:0},
-    {n:15,name:'Teboho Mokoena',pos:'MF',club:'Mamelodi Sundowns',age:29,caps:51,goals:9},
-    {n:16,name:'Sphephelo Sithole',pos:'MF',club:'Tondela',age:27,caps:27,goals:1},
-    {n:17,name:'Thalente Mbatha',pos:'MF',club:'Orlando Pirates',age:26,caps:14,goals:3},
-    {n:18,name:'Jayden Adams',pos:'MF',club:'Mamelodi Sundowns',age:25,caps:4,goals:0},
-    {n:19,name:'Themba Zwane',pos:'FW',club:'Mamelodi Sundowns',age:36,caps:53,goals:12},
-    {n:20,name:'Lyle Foster',pos:'FW',club:'Burnley',age:26,caps:26,goals:10},
-    {n:21,name:'Evidence Makgopa',pos:'FW',club:'Orlando Pirates',age:26,caps:26,goals:6},
-    {n:22,name:'Oswin Appollis',pos:'FW',club:'Orlando Pirates',age:24,caps:25,goals:8},
-    {n:23,name:'Iqraam Rayners',pos:'FW',club:'Mamelodi Sundowns',age:30,caps:13,goals:4},
-    {n:24,name:'Relebohile Mofokeng',pos:'FW',club:'Orlando Pirates',age:21,caps:12,goals:0},
-    {n:25,name:'Thapelo Maseko',pos:'FW',club:'AEL Limassol',age:22,caps:9,goals:1},
-    {n:26,name:'Tshepang Moremi',pos:'FW',club:'Orlando Pirates',age:25,caps:9,goals:1},
-  ]},
-  'Korea Republic':{coach:'Hong Myung-bo',style:'4-2-3-1',confederation:'AFC',players:[
-    {n:1,name:'Kim Seung-gyu',pos:'GK',club:'FC Tokyo',age:35,caps:86,goals:0},
-    {n:2,name:'Jo Hyeon-woo',pos:'GK',club:'Ulsan HD',age:34,caps:48,goals:0},
-    {n:3,name:'Song Bum-keun',pos:'GK',club:'Jeonbuk Hyundai',age:28,caps:2,goals:0},
-    {n:4,name:'Kim Min-jae',pos:'DF',club:'Bayern Munich',age:29,caps:78,goals:4,nick:'Monster'},
-    {n:5,name:'Kim Moon-hwan',pos:'DF',club:'Daejeon Hana Citizen',age:30,caps:35,goals:0},
-    {n:6,name:'Seol Young-woo',pos:'DF',club:'Red Star Belgrade',age:27,caps:33,goals:0},
-    {n:7,name:'Lee Tae-seok',pos:'DF',club:'Austria Wien',age:23,caps:14,goals:1},
-    {n:8,name:'Park Jin-seob',pos:'DF',club:'Zhejiang',age:30,caps:13,goals:1},
-    {n:9,name:'Kim Tae-hyeon',pos:'DF',club:'Kashima Antlers',age:25,caps:7,goals:0},
-    {n:10,name:'Lee Han-beom',pos:'DF',club:'Midtjylland',age:23,caps:7,goals:0},
-    {n:11,name:'Jens Castrop',pos:'DF',club:"Borussia M'gladbach",age:22,caps:6,goals:0},
-    {n:12,name:'Lee Ki-hyuk',pos:'DF',club:'Gangwon FC',age:25,caps:2,goals:0},
-    {n:13,name:'Cho Wi-je',pos:'DF',club:'Jeonbuk Hyundai',age:24,caps:0,goals:0},
-    {n:14,name:'Lee Jae-sung',pos:'MF',club:'Mainz 05',age:33,caps:104,goals:15},
-    {n:15,name:'Hwang Hee-chan',pos:'MF',club:'Wolves',age:30,caps:78,goals:17},
-    {n:16,name:'Hwang In-beom',pos:'MF',club:'Feyenoord',age:29,caps:72,goals:6},
-    {n:17,name:'Lee Kang-in',pos:'MF',club:'Paris Saint-Germain',age:25,caps:46,goals:11,nick:'Kang-in'},
-    {n:18,name:'Paik Seung-ho',pos:'MF',club:'Birmingham City',age:29,caps:26,goals:3},
-    {n:19,name:'Kim Jin-gyu',pos:'MF',club:'Jeonbuk Hyundai',age:29,caps:21,goals:3},
-    {n:20,name:'Lee Dong-gyeong',pos:'MF',club:'Ulsan HD',age:28,caps:17,goals:3},
-    {n:21,name:'Bae Jun-ho',pos:'MF',club:'Stoke City',age:22,caps:13,goals:2},
-    {n:22,name:'Eom Ji-sung',pos:'MF',club:'Swansea City',age:24,caps:9,goals:2},
-    {n:23,name:'Yang Hyun-jun',pos:'MF',club:'Celtic',age:24,caps:8,goals:0},
-    {n:24,name:'Son Heung-min',pos:'FW',club:'Los Angeles FC',age:33,caps:143,goals:56,nick:'Sonny · Captain'},
-    {n:25,name:'Cho Gue-sung',pos:'FW',club:'Midtjylland',age:28,caps:43,goals:12},
-    {n:26,name:'Oh Hyeon-gyu',pos:'FW',club:'Beşiktaş',age:25,caps:26,goals:6},
-  ]},
-  'Bosnia & Herz.':{coach:'Sergej Barbarez',style:'4-3-3',confederation:'UEFA',players:[
-    {n:1,name:'Nikola Vasilj',pos:'GK',club:'FC St. Pauli',age:30,caps:25,goals:0},
-    {n:2,name:'Martin Zlomislić',pos:'GK',club:'Rijeka',age:27,caps:3,goals:0},
-    {n:3,name:'Osman Hadžikić',pos:'GK',club:'Slaven Belupo',age:30,caps:0,goals:0},
-    {n:4,name:'Sead Kolašinac',pos:'DF',club:'Atalanta',age:32,caps:64,goals:0},
-    {n:5,name:'Dennis Hadžikadunić',pos:'DF',club:'Sampdoria',age:27,caps:31,goals:0},
-    {n:6,name:'Amar Dedić',pos:'DF',club:'Benfica',age:23,caps:27,goals:1},
-    {n:7,name:'Nikola Katić',pos:'DF',club:'Schalke 04',age:29,caps:16,goals:1},
-    {n:8,name:'Tarik Muharemović',pos:'DF',club:'Sassuolo',age:23,caps:13,goals:1},
-    {n:9,name:'Nihad Mujakić',pos:'DF',club:'Gaziantep',age:28,caps:11,goals:1},
-    {n:10,name:'Stjepan Radeljić',pos:'DF',club:'Rijeka',age:28,caps:5,goals:0},
-    {n:11,name:'Nidal Čelik',pos:'DF',club:'Lens',age:19,caps:1,goals:0},
-    {n:12,name:'Amir Hadžiahmetović',pos:'MF',club:'Hull City',age:29,caps:35,goals:0},
-    {n:13,name:'Benjamin Tahirović',pos:'MF',club:'Brøndby',age:23,caps:27,goals:2},
-    {n:14,name:'Armin Gigović',pos:'MF',club:'Young Boys',age:24,caps:19,goals:1},
-    {n:15,name:'Dženis Burnić',pos:'MF',club:'Karlsruher SC',age:28,caps:19,goals:0},
-    {n:16,name:'Ivan Bašić',pos:'MF',club:'Astana',age:24,caps:16,goals:0},
-    {n:17,name:'Esmir Bajraktarević',pos:'MF',club:'PSV Eindhoven',age:21,caps:15,goals:1},
-    {n:18,name:'Amar Memić',pos:'MF',club:'Viktoria Plzeň',age:25,caps:12,goals:1},
-    {n:19,name:'Ivan Šunjić',pos:'MF',club:'Pafos',age:29,caps:11,goals:0},
-    {n:20,name:'Kerim Alajbegović',pos:'MF',club:'Red Bull Salzburg',age:18,caps:9,goals:1},
-    {n:21,name:'Ermin Mahmić',pos:'MF',club:'Slovan Liberec',age:21,caps:1,goals:0},
-    {n:22,name:'Edin Džeko',pos:'FW',club:'Schalke 04',age:40,caps:148,goals:73,nick:'Captain'},
-    {n:23,name:'Ermedin Demirović',pos:'FW',club:'VfB Stuttgart',age:28,caps:39,goals:4},
-    {n:24,name:'Samed Baždar',pos:'FW',club:'Jagiellonia',age:22,caps:12,goals:1},
-    {n:25,name:'Haris Tabaković',pos:'FW',club:"Borussia M'gladbach",age:31,caps:10,goals:4},
-    {n:26,name:'Jovo Lukić',pos:'FW',club:'Universitatea Cluj',age:27,caps:2,goals:0},
-  ]},
-  'Canada':{coach:'Jesse Marsch',style:'4-2-3-1',confederation:'CONCACAF',players:[
-    {n:1,name:'Dayne St. Clair',pos:'GK',club:'Inter Miami CF',age:29,caps:19,goals:0},
-    {n:2,name:'Alistair Johnston',pos:'DF',club:'Celtic',age:27,caps:56,goals:1},
-    {n:3,name:'Luc de Fougerolles',pos:'DF',club:'Dender',age:20,caps:11,goals:0},
-    {n:4,name:'Alfie Jones',pos:'DF',club:'Middlesbrough',age:28,caps:1,goals:0},
-    {n:5,name:'Joel Waterman',pos:'DF',club:'Chicago Fire FC',age:30,caps:17,goals:0},
-    {n:6,name:'Mathieu Choinière',pos:'MF',club:'Los Angeles FC',age:27,caps:22,goals:0},
-    {n:7,name:'Stephen Eustáquio',pos:'MF',club:'Los Angeles FC',age:29,caps:54,goals:4},
-    {n:8,name:'Ismaël Koné',pos:'MF',club:'Sassuolo',age:23,caps:38,goals:4},
-    {n:9,name:'Cyle Larin',pos:'FW',club:'Southampton',age:31,caps:88,goals:30},
-    {n:10,name:'Jonathan David',pos:'FW',club:'Juventus',age:26,caps:75,goals:39,nick:'JD'},
-    {n:11,name:'Liam Millar',pos:'MF',club:'Hull City',age:26,caps:39,goals:1},
-    {n:12,name:'Tani Oluwaseyi',pos:'FW',club:'Villarreal',age:26,caps:22,goals:2},
-    {n:13,name:'Derek Cornelius',pos:'DF',club:'Rangers',age:28,caps:42,goals:1},
-    {n:14,name:'Jacob Shaffelburg',pos:'MF',club:'Los Angeles FC',age:26,caps:31,goals:6},
-    {n:15,name:'Moïse Bombito',pos:'DF',club:'Nice',age:26,caps:19,goals:0},
-    {n:16,name:'Maxime Crépeau',pos:'GK',club:'Orlando City SC',age:32,caps:30,goals:0},
-    {n:17,name:'Tajon Buchanan',pos:'MF',club:'Villarreal',age:27,caps:58,goals:8},
-    {n:18,name:'Owen Goodman',pos:'GK',club:'Barnsley',age:22,caps:0,goals:0},
-    {n:19,name:'Alphonso Davies',pos:'DF',club:'Bayern Munich',age:25,caps:58,goals:15,nick:'Phonzy · Captain'},
-    {n:20,name:'Ali Ahmed',pos:'MF',club:'Norwich City',age:25,caps:24,goals:1},
-    {n:21,name:'Jonathan Osorio',pos:'MF',club:'Toronto FC',age:33,caps:89,goals:9},
-    {n:22,name:'Richie Laryea',pos:'DF',club:'Toronto FC',age:31,caps:73,goals:1},
-    {n:23,name:'Niko Sigur',pos:'DF',club:'Hajduk Split',age:22,caps:17,goals:2},
-    {n:24,name:'Promise David',pos:'FW',club:'Union Saint-Gilloise',age:24,caps:8,goals:3},
-    {n:25,name:'Nathan Saliba',pos:'MF',club:'Anderlecht',age:22,caps:13,goals:2},
-  ]},
-  'Qatar':{coach:'Julen Lopetegui',style:'4-3-3',confederation:'AFC',players:[
-    {n:1,name:'Mahmud Abunada',pos:'GK',club:'Al-Rayyan',age:26,caps:4,goals:0},
-    {n:2,name:'Pedro Miguel',pos:'DF',club:'Al-Sadd',age:35,caps:98,goals:3},
-    {n:3,name:'Lucas Mendes',pos:'DF',club:'Al-Wakrah',age:35,caps:25,goals:1},
-    {n:4,name:'Issa Laye',pos:'DF',club:'Al-Arabi',age:28,caps:3,goals:0},
-    {n:5,name:'Jassem Gaber',pos:'MF',club:'Al-Rayyan',age:24,caps:31,goals:1},
-    {n:6,name:'Abdulaziz Hatem',pos:'MF',club:'Al-Rayyan',age:35,caps:117,goals:11},
-    {n:7,name:'Ahmed Alaaeldin',pos:'FW',club:'Al-Rayyan',age:33,caps:67,goals:9},
-    {n:8,name:'Edmilson Junior',pos:'FW',club:'Al-Duhail',age:31,caps:15,goals:0},
-    {n:9,name:'Mohammed Muntari',pos:'FW',club:'Al-Gharafa',age:32,caps:67,goals:16},
-    {n:10,name:'Hassan Al-Haydos',pos:'FW',club:'Al-Sadd',age:35,caps:185,goals:41,nick:'Captain'},
-    {n:11,name:'Akram Afif',pos:'FW',club:'Al-Sadd',age:29,caps:124,goals:39},
-    {n:12,name:'Karim Boudiaf',pos:'MF',club:'Al-Duhail',age:35,caps:117,goals:5},
-    {n:13,name:'Ayoub Al-Oui',pos:'DF',club:'Al-Gharafa',age:21,caps:5,goals:0},
-    {n:14,name:'Homam Ahmed',pos:'DF',club:'Cultural Leonesa',age:26,caps:67,goals:3},
-    {n:15,name:'Yusuf Abdurisag',pos:'FW',club:'Al-Wakrah',age:26,caps:38,goals:3},
-    {n:16,name:'Boualem Khoukhi',pos:'DF',club:'Al-Sadd',age:35,caps:115,goals:20},
-    {n:17,name:'Ahmed Al-Ganehi',pos:'FW',club:'Al-Gharafa',age:25,caps:13,goals:1},
-    {n:18,name:'Sultan Al-Brake',pos:'DF',club:'Al-Duhail',age:30,caps:16,goals:0},
-    {n:19,name:'Almoez Ali',pos:'FW',club:'Al-Duhail',age:29,caps:115,goals:55},
-    {n:20,name:'Ahmed Fathy',pos:'MF',club:'Al-Arabi',age:33,caps:47,goals:0},
-    {n:21,name:'Salah Zakaria',pos:'GK',club:'Al-Duhail',age:27,caps:8,goals:0},
-    {n:22,name:'Meshaal Barsham',pos:'GK',club:'Al-Sadd',age:28,caps:52,goals:0},
-    {n:23,name:'Assim Madibo',pos:'MF',club:'Al-Wakrah',age:29,caps:50,goals:0},
-    {n:24,name:'Tahsin Jamshid',pos:'FW',club:'Al-Duhail',age:19,caps:2,goals:0},
-    {n:25,name:'Al-Hashmi Al-Hussain',pos:'DF',club:'Al-Arabi',age:22,caps:7,goals:0},
-    {n:26,name:'Mohamed Al-Mannai',pos:'MF',club:'Al-Shamal',age:22,caps:9,goals:0},
-  ]},
-  'Switzerland':{coach:'Murat Yakin',style:'3-4-2-1',confederation:'UEFA',players:[
-    {n:1,name:'Gregor Kobel',pos:'GK',club:'Borussia Dortmund',age:28,caps:20,goals:0},
-    {n:2,name:'Miro Muheim',pos:'DF',club:'Hamburger SV',age:28,caps:9,goals:0},
-    {n:3,name:'Silvan Widmer',pos:'DF',club:'Mainz 05',age:33,caps:59,goals:5},
-    {n:4,name:'Nico Elvedi',pos:'DF',club:"Borussia M'gladbach",age:29,caps:66,goals:3},
-    {n:5,name:'Manuel Akanji',pos:'DF',club:'Inter Milan',age:30,caps:80,goals:4,nick:'Akanji'},
-    {n:6,name:'Denis Zakaria',pos:'MF',club:'Monaco',age:29,caps:64,goals:3},
-    {n:7,name:'Breel Embolo',pos:'FW',club:'Rennes',age:29,caps:86,goals:24},
-    {n:8,name:'Remo Freuler',pos:'MF',club:'Bologna',age:34,caps:87,goals:11},
-    {n:9,name:'Johan Manzambi',pos:'MF',club:'SC Freiburg',age:20,caps:11,goals:3},
-    {n:10,name:'Granit Xhaka',pos:'MF',club:'Sunderland',age:33,caps:145,goals:17,nick:'Captain'},
-    {n:11,name:'Dan Ndoye',pos:'FW',club:'Nottingham Forest',age:25,caps:30,goals:7},
-    {n:12,name:'Yvon Mvogo',pos:'GK',club:'Lorient',age:32,caps:13,goals:0},
-    {n:13,name:'Ricardo Rodriguez',pos:'DF',club:'Real Betis',age:33,caps:137,goals:9},
-    {n:14,name:'Ardon Jashari',pos:'MF',club:'Milan',age:23,caps:7,goals:0},
-    {n:15,name:'Djibril Sow',pos:'MF',club:'Sevilla',age:29,caps:51,goals:0},
-    {n:16,name:'Christian Fassnacht',pos:'MF',club:'Young Boys',age:32,caps:22,goals:5},
-    {n:17,name:'Rubén Vargas',pos:'FW',club:'Sevilla',age:27,caps:61,goals:11},
-    {n:18,name:'Eray Cömert',pos:'DF',club:'Valencia',age:28,caps:21,goals:0},
-    {n:19,name:'Noah Okafor',pos:'FW',club:'Leeds United',age:26,caps:24,goals:2},
-    {n:20,name:'Michel Aebischer',pos:'MF',club:'Pisa',age:29,caps:39,goals:2},
-    {n:21,name:'Marvin Keller',pos:'GK',club:'Young Boys',age:23,caps:1,goals:0},
-    {n:22,name:'Fabian Rieder',pos:'MF',club:'FC Augsburg',age:24,caps:27,goals:1},
-    {n:23,name:'Zeki Amdouni',pos:'FW',club:'Burnley',age:25,caps:28,goals:11},
-    {n:24,name:'Aurèle Amenda',pos:'DF',club:'Eintracht Frankfurt',age:22,caps:6,goals:0},
-    {n:25,name:'Luca Jaquez',pos:'DF',club:'VfB Stuttgart',age:23,caps:3,goals:0},
-    {n:26,name:'Cedric Itten',pos:'FW',club:'Fortuna Düsseldorf',age:29,caps:14,goals:5},
-  ]},
-  'Brazil':{coach:'Carlo Ancelotti',style:'4-2-3-1',confederation:'CONMEBOL',players:[
-    {n:1,name:'Alisson',pos:'GK',club:'Liverpool',age:33,caps:77,goals:0,nick:'Alisson'},
-    {n:2,name:'Wesley',pos:'DF',club:'Roma',age:22,caps:7,goals:0},
-    {n:3,name:'Gabriel Magalhães',pos:'DF',club:'Arsenal',age:28,caps:17,goals:1},
-    {n:4,name:'Marquinhos',pos:'DF',club:'Paris Saint-Germain',age:32,caps:104,goals:7,nick:'Captain'},
-    {n:5,name:'Casemiro',pos:'MF',club:'Manchester United',age:34,caps:85,goals:9,nick:'Casemiro'},
-    {n:6,name:'Alex Sandro',pos:'DF',club:'Flamengo',age:35,caps:44,goals:2},
-    {n:7,name:'Vinícius Júnior',pos:'FW',club:'Real Madrid',age:25,caps:48,goals:9,nick:'Vini Jr'},
-    {n:8,name:'Bruno Guimarães',pos:'MF',club:'Newcastle United',age:28,caps:42,goals:2},
-    {n:9,name:'Matheus Cunha',pos:'FW',club:'Manchester United',age:27,caps:22,goals:1},
-    {n:10,name:'Neymar',pos:'FW',club:'Santos',age:34,caps:128,goals:79,nick:'Ney'},
-    {n:11,name:'Raphinha',pos:'FW',club:'Barcelona',age:29,caps:38,goals:11,nick:'Raphinha'},
-    {n:12,name:'Weverton',pos:'GK',club:'Grêmio',age:38,caps:10,goals:0},
-    {n:13,name:'Danilo Luiz',pos:'DF',club:'Flamengo',age:34,caps:69,goals:1},
-    {n:14,name:'Bremer',pos:'DF',club:'Juventus',age:29,caps:7,goals:1},
-    {n:15,name:'Léo Pereira',pos:'DF',club:'Flamengo',age:30,caps:3,goals:0},
-    {n:16,name:'Douglas Santos',pos:'DF',club:'Zenit',age:32,caps:6,goals:0},
-    {n:17,name:'Fabinho',pos:'MF',club:'Al-Ittihad',age:32,caps:32,goals:0},
-    {n:18,name:'Danilo Santos',pos:'MF',club:'Botafogo',age:25,caps:3,goals:2},
-    {n:19,name:'Endrick',pos:'FW',club:'Lyon',age:19,caps:16,goals:3,nick:'Endrick'},
-    {n:20,name:'Lucas Paquetá',pos:'MF',club:'Flamengo',age:28,caps:62,goals:13,nick:'Paquetá'},
-    {n:21,name:'Luiz Henrique',pos:'FW',club:'Zenit',age:25,caps:14,goals:2},
-    {n:22,name:'Gabriel Martinelli',pos:'FW',club:'Arsenal',age:24,caps:22,goals:4},
-    {n:23,name:'Ederson',pos:'GK',club:'Fenerbahçe',age:32,caps:32,goals:0},
-    {n:24,name:'Roger Ibañez',pos:'DF',club:'Al-Ahli',age:27,caps:6,goals:0},
-    {n:25,name:'Igor Thiago',pos:'FW',club:'Brentford',age:24,caps:3,goals:2},
-    {n:26,name:'Rayan',pos:'FW',club:'Bournemouth',age:19,caps:2,goals:1},
-  ]},
-  'Haiti':{coach:'Sébastien Migné',style:'4-3-3',confederation:'CONCACAF',players:[
-    {n:1,name:'Johny Placide',pos:'GK',club:'Bastia',age:38,caps:79,goals:0,nick:'Captain'},
-    {n:2,name:'Alexandre Pierre',pos:'GK',club:'Sochaux',age:25,caps:14,goals:0},
-    {n:3,name:'Josué Duverger',pos:'GK',club:'Cosmos Koblenz',age:26,caps:6,goals:0},
-    {n:4,name:'Ricardo Adé',pos:'DF',club:'LDU Quito',age:36,caps:57,goals:2},
-    {n:5,name:'Carlens Arcus',pos:'DF',club:'Angers',age:29,caps:51,goals:1},
-    {n:6,name:'Martin Expérience',pos:'DF',club:'Nancy',age:27,caps:19,goals:0},
-    {n:7,name:'Jean-Kévin Duverne',pos:'DF',club:'Gent',age:28,caps:15,goals:1},
-    {n:8,name:'Duke Lacroix',pos:'DF',club:'Colorado Springs',age:32,caps:14,goals:2},
-    {n:9,name:'Wilguens Paugain',pos:'DF',club:'Zulte Waregem',age:24,caps:6,goals:0},
-    {n:10,name:'Hannes Delcroix',pos:'DF',club:'Lugano',age:27,caps:5,goals:0},
-    {n:11,name:'Keeto Thermoncy',pos:'DF',club:'Young Boys',age:20,caps:1,goals:0},
-    {n:12,name:'Leverton Pierre',pos:'MF',club:'Vizela',age:28,caps:33,goals:0},
-    {n:13,name:'Danley Jean Jacques',pos:'MF',club:'Philadelphia Union',age:26,caps:28,goals:6},
-    {n:14,name:'Carl Sainté',pos:'MF',club:'El Paso Locomotive',age:23,caps:25,goals:0},
-    {n:15,name:'Jean-Ricner Bellegarde',pos:'MF',club:'Wolves',age:27,caps:8,goals:0},
-    {n:16,name:'Woodensky Pierre',pos:'MF',club:'Violette',age:21,caps:1,goals:0},
-    {n:17,name:'Dominique Simon',pos:'MF',club:'Tatran Prešov',age:25,caps:0,goals:0},
-    {n:18,name:'Duckens Nazon',pos:'FW',club:'Esteghlal',age:32,caps:76,goals:44},
-    {n:19,name:'Frantzdy Pierrot',pos:'FW',club:'Çaykur Rizespor',age:31,caps:49,goals:33},
-    {n:20,name:'Derrick Etienne Jr.',pos:'FW',club:'Toronto FC',age:29,caps:46,goals:8},
-    {n:21,name:'Louicius Deedson',pos:'FW',club:'FC Dallas',age:25,caps:30,goals:10},
-    {n:22,name:'Ruben Providence',pos:'FW',club:'Almere City',age:24,caps:13,goals:2},
-    {n:23,name:'Josué Casimir',pos:'FW',club:'Auxerre',age:24,caps:5,goals:0},
-    {n:24,name:'Yassin Fortuné',pos:'FW',club:'Vizela',age:27,caps:3,goals:0},
-    {n:25,name:'Wilson Isidor',pos:'FW',club:'Sunderland',age:25,caps:2,goals:1},
-    {n:26,name:'Lenny Joseph',pos:'FW',club:'Ferencváros',age:25,caps:0,goals:0},
-  ]},
-  'Morocco':{coach:'Mohamed Ouahbi',style:'4-1-4-1',confederation:'CAF',players:[
-    {n:1,name:'Yassine Bounou',pos:'GK',club:'Al-Hilal',age:35,caps:89,goals:0,nick:'Bono'},
-    {n:2,name:'Munir Mohamedi',pos:'GK',club:'RS Berkane',age:37,caps:51,goals:0},
-    {n:3,name:'Ahmed Reda Tagnaouti',pos:'GK',club:'AS FAR',age:30,caps:3,goals:0},
-    {n:4,name:'Achraf Hakimi',pos:'DF',club:'Paris Saint-Germain',age:27,caps:95,goals:11,nick:'Captain'},
-    {n:5,name:'Nayef Aguerd',pos:'DF',club:'Marseille',age:30,caps:64,goals:2},
-    {n:6,name:'Noussair Mazraoui',pos:'DF',club:'Manchester United',age:28,caps:43,goals:2},
-    {n:7,name:'Youssef Belammari',pos:'DF',club:'Al Ahly',age:27,caps:16,goals:0},
-    {n:8,name:'Anass Salah-Eddine',pos:'DF',club:'PSV Eindhoven',age:24,caps:8,goals:0},
-    {n:9,name:'Chadi Riad',pos:'DF',club:'Crystal Palace',age:22,caps:4,goals:1},
-    {n:10,name:'Issa Diop',pos:'DF',club:'Fulham',age:29,caps:2,goals:0},
-    {n:11,name:'Zakaria El Ouahdi',pos:'DF',club:'Genk',age:24,caps:2,goals:0},
-    {n:12,name:'Redouane Halhal',pos:'DF',club:'Mechelen',age:23,caps:1,goals:0},
-    {n:13,name:'Sofyan Amrabat',pos:'MF',club:'Real Betis',age:29,caps:73,goals:0,nick:'Sofyan'},
-    {n:14,name:'Azzedine Ounahi',pos:'MF',club:'Girona',age:26,caps:47,goals:9},
-    {n:15,name:'Bilal El Khannouss',pos:'MF',club:'VfB Stuttgart',age:22,caps:35,goals:3,nick:'Bilal'},
-    {n:16,name:'Ismael Saibari',pos:'MF',club:'PSV Eindhoven',age:25,caps:28,goals:7},
-    {n:17,name:'Neil El Aynaoui',pos:'MF',club:'Roma',age:24,caps:15,goals:2},
-    {n:18,name:'Samir El Mourabet',pos:'MF',club:'Strasbourg',age:19,caps:2,goals:0},
-    {n:19,name:'Ayyoub Bouaddi',pos:'MF',club:'Lille',age:18,caps:1,goals:0},
-    {n:20,name:'Ayoub El Kaabi',pos:'FW',club:'Olympiacos',age:32,caps:57,goals:22},
-    {n:21,name:'Soufiane Rahimi',pos:'FW',club:'Al-Ain',age:30,caps:35,goals:11},
-    {n:22,name:'Abde Ezzalzouli',pos:'FW',club:'Real Betis',age:24,caps:35,goals:2},
-    {n:23,name:'Brahim Díaz',pos:'FW',club:'Real Madrid',age:26,caps:24,goals:13,nick:'Brahim'},
-    {n:24,name:'Chemsdine Talbi',pos:'FW',club:'Sunderland',age:21,caps:5,goals:0},
-    {n:25,name:'Gessime Yassine',pos:'FW',club:'Strasbourg',age:20,caps:3,goals:0},
-    {n:26,name:'Ayoube Amaimouni',pos:'FW',club:'Eintracht Frankfurt',age:21,caps:0,goals:0},
-  ]},
-  'Scotland':{coach:'Steve Clarke',style:'4-3-3',confederation:'UEFA',players:[
-    {n:1,name:'Craig Gordon',pos:'GK',club:'Heart of Midlothian',age:43,caps:84,goals:0},
-    {n:2,name:'Angus Gunn',pos:'GK',club:'Nottingham Forest',age:30,caps:21,goals:0},
-    {n:3,name:'Liam Kelly',pos:'GK',club:'Rangers',age:30,caps:3,goals:0},
-    {n:4,name:'Andy Robertson',pos:'DF',club:'Liverpool',age:32,caps:93,goals:4,nick:'Captain'},
-    {n:5,name:'Grant Hanley',pos:'DF',club:'Hibernian',age:34,caps:67,goals:2},
-    {n:6,name:'Kieran Tierney',pos:'DF',club:'Celtic',age:29,caps:55,goals:2},
-    {n:7,name:'Scott McKenna',pos:'DF',club:'Dinamo Zagreb',age:29,caps:50,goals:1},
-    {n:8,name:'Jack Hendry',pos:'DF',club:'Al-Ettifaq',age:31,caps:37,goals:3},
-    {n:9,name:'Nathan Patterson',pos:'DF',club:'Everton',age:24,caps:26,goals:1},
-    {n:10,name:'Anthony Ralston',pos:'DF',club:'Celtic',age:27,caps:26,goals:1},
-    {n:11,name:'John Souttar',pos:'DF',club:'Rangers',age:29,caps:23,goals:2},
-    {n:12,name:'Aaron Hickey',pos:'DF',club:'Brentford',age:24,caps:20,goals:0},
-    {n:13,name:'Dominic Hyam',pos:'DF',club:'Wrexham',age:30,caps:3,goals:0},
-    {n:14,name:'John McGinn',pos:'MF',club:'Aston Villa',age:31,caps:85,goals:20},
-    {n:15,name:'Scott McTominay',pos:'MF',club:'Napoli',age:29,caps:69,goals:14},
-    {n:16,name:'Ryan Christie',pos:'MF',club:'Bournemouth',age:31,caps:67,goals:10},
-    {n:17,name:'Kenny McLean',pos:'MF',club:'Norwich City',age:34,caps:57,goals:3},
-    {n:18,name:'Lewis Ferguson',pos:'MF',club:'Bologna',age:26,caps:23,goals:1},
-    {n:19,name:'Ben Gannon-Doak',pos:'MF',club:'Bournemouth',age:20,caps:13,goals:1},
-    {n:20,name:'Findlay Curtis',pos:'MF',club:'Kilmarnock',age:20,caps:2,goals:1},
-    {n:21,name:'Tyler Fletcher',pos:'MF',club:'Manchester United',age:19,caps:1,goals:0},
-    {n:22,name:'Lyndon Dykes',pos:'FW',club:'Charlton Athletic',age:30,caps:51,goals:10},
-    {n:23,name:'Ché Adams',pos:'FW',club:'Torino',age:29,caps:46,goals:11},
-    {n:24,name:'Lawrence Shankland',pos:'FW',club:'Heart of Midlothian',age:30,caps:19,goals:6},
-    {n:25,name:'George Hirst',pos:'FW',club:'Ipswich Town',age:27,caps:9,goals:1},
-    {n:26,name:'Ross Stewart',pos:'FW',club:'Southampton',age:29,caps:2,goals:0},
-  ]},
-  'United States':{coach:'Mauricio Pochettino',style:'4-3-3',confederation:'CONCACAF',players:[
-    {n:1,name:'Matt Turner',pos:'GK',club:'New England Revolution',age:31,caps:54,goals:0},
-    {n:2,name:'Sergiño Dest',pos:'DF',club:'PSV Eindhoven',age:25,caps:38,goals:3},
-    {n:3,name:'Chris Richards',pos:'DF',club:'Crystal Palace',age:26,caps:36,goals:3},
-    {n:4,name:'Tyler Adams',pos:'MF',club:'Bournemouth',age:27,caps:53,goals:2},
-    {n:5,name:'Antonee Robinson',pos:'DF',club:'Fulham',age:28,caps:53,goals:4,nick:'Jedi'},
-    {n:6,name:'Auston Trusty',pos:'DF',club:'Celtic',age:27,caps:7,goals:0},
-    {n:7,name:'Giovanni Reyna',pos:'MF',club:"Borussia M'gladbach",age:23,caps:37,goals:9,nick:'Gio'},
-    {n:8,name:'Weston McKennie',pos:'MF',club:'Juventus',age:27,caps:65,goals:12},
-    {n:9,name:'Ricardo Pepi',pos:'FW',club:'PSV Eindhoven',age:23,caps:36,goals:13},
-    {n:10,name:'Christian Pulisic',pos:'FW',club:'Milan',age:27,caps:85,goals:33,nick:'Captain America'},
-    {n:11,name:'Brenden Aaronson',pos:'FW',club:'Leeds United',age:25,caps:57,goals:9},
-    {n:12,name:'Miles Robinson',pos:'DF',club:'FC Cincinnati',age:29,caps:39,goals:3},
-    {n:13,name:'Tim Ream',pos:'DF',club:'Charlotte FC',age:38,caps:81,goals:1,nick:'Captain'},
-    {n:14,name:'Sebastian Berhalter',pos:'MF',club:'Vancouver Whitecaps',age:25,caps:12,goals:1},
-    {n:15,name:'Cristian Roldan',pos:'MF',club:'Seattle Sounders',age:31,caps:46,goals:0},
-    {n:16,name:'Alex Freeman',pos:'DF',club:'Villarreal',age:21,caps:16,goals:2},
-    {n:17,name:'Malik Tillman',pos:'MF',club:'Bayer Leverkusen',age:24,caps:29,goals:3},
-    {n:18,name:'Maximilian Arfsten',pos:'DF',club:'Columbus Crew',age:25,caps:19,goals:1},
-    {n:19,name:'Haji Wright',pos:'FW',club:'Coventry City',age:28,caps:20,goals:7},
-    {n:20,name:'Folarin Balogun',pos:'FW',club:'Monaco',age:24,caps:26,goals:9},
-    {n:21,name:'Timothy Weah',pos:'FW',club:'Marseille',age:26,caps:50,goals:7},
-    {n:22,name:'Mark McKenzie',pos:'DF',club:'Toulouse',age:27,caps:28,goals:0},
-    {n:23,name:'Joe Scally',pos:'DF',club:"Borussia M'gladbach",age:23,caps:25,goals:0},
-    {n:24,name:'Paxten Aaronson',pos:'MF',club:'Eintracht Frankfurt',age:22,caps:8,goals:1},
-    {n:25,name:'Patrick Agyemang',pos:'FW',club:'Brighton',age:21,caps:6,goals:1},
-  ]},
-  'Australia':{coach:'Tony Popovic',style:'4-3-3',confederation:'AFC',players:[
-    {n:1,name:'Mathew Ryan',pos:'GK',club:'Levante',age:34,caps:104,goals:0,nick:'Captain'},
-    {n:2,name:'Miloš Degenek',pos:'DF',club:'APOEL',age:32,caps:56,goals:1},
-    {n:3,name:'Alessandro Circati',pos:'DF',club:'Parma',age:22,caps:12,goals:1},
-    {n:4,name:'Jacob Italiano',pos:'DF',club:'GAK',age:24,caps:4,goals:0},
-    {n:5,name:'Jordan Bos',pos:'DF',club:'Feyenoord',age:23,caps:26,goals:4},
-    {n:6,name:'Jason Geria',pos:'DF',club:'Albirex Niigata',age:33,caps:13,goals:0},
-    {n:7,name:'Mathew Leckie',pos:'FW',club:'Melbourne City',age:35,caps:79,goals:14},
-    {n:8,name:'Connor Metcalfe',pos:'MF',club:'FC St. Pauli',age:26,caps:35,goals:1},
-    {n:9,name:'Mohamed Touré',pos:'FW',club:'Norwich City',age:22,caps:9,goals:2},
-    {n:10,name:'Ajdin Hrustic',pos:'MF',club:'Heracles Almelo',age:29,caps:37,goals:4},
-    {n:11,name:'Awer Mabil',pos:'FW',club:'Castellón',age:30,caps:38,goals:10,nick:'Awer'},
-    {n:12,name:'Paul Izzo',pos:'GK',club:'Randers',age:31,caps:4,goals:0},
-    {n:13,name:'Aiden O\'Neill',pos:'MF',club:'New York City FC',age:27,caps:30,goals:0},
-    {n:14,name:'Cammy Devlin',pos:'MF',club:'Heart of Midlothian',age:28,caps:4,goals:0},
-    {n:15,name:'Kai Trewin',pos:'DF',club:'New York City FC',age:25,caps:5,goals:0},
-    {n:16,name:'Aziz Behich',pos:'DF',club:'Melbourne City',age:35,caps:83,goals:3},
-    {n:17,name:'Nestory Irankunda',pos:'FW',club:'Watford',age:20,caps:14,goals:5},
-    {n:18,name:'Patrick Beach',pos:'GK',club:'Melbourne City',age:22,caps:1,goals:0},
-    {n:19,name:'Harry Souttar',pos:'DF',club:'Leicester City',age:27,caps:37,goals:11},
-    {n:20,name:'Cristian Volpato',pos:'FW',club:'Sassuolo',age:22,caps:0,goals:0},
-    {n:21,name:'Cameron Burgess',pos:'DF',club:'Swansea City',age:30,caps:26,goals:0},
-    {n:22,name:'Jackson Irvine',pos:'MF',club:'FC St. Pauli',age:33,caps:81,goals:14},
-    {n:23,name:'Nishan Velupillay',pos:'FW',club:'Melbourne Victory',age:25,caps:7,goals:3},
-    {n:24,name:'Paul Okon-Engstler',pos:'MF',club:'Sydney FC',age:21,caps:5,goals:0},
-    {n:25,name:'Lucas Herrington',pos:'DF',club:'Colorado Rapids',age:18,caps:3,goals:0},
-    {n:26,name:'Tete Yengi',pos:'FW',club:'Machida Zelvia',age:25,caps:0,goals:0},
-  ]},
-  'Paraguay':{coach:'Gustavo Alfaro',style:'4-2-3-1',confederation:'CONMEBOL',players:[
-    {n:1,name:'Gatito Fernández',pos:'GK',club:'Cerro Porteño',age:38,caps:30,goals:0},
-    {n:2,name:'Orlando Gill',pos:'GK',club:'San Lorenzo',age:26,caps:5,goals:0},
-    {n:3,name:'Gastón Olveira',pos:'GK',club:'Olimpia',age:33,caps:1,goals:0},
-    {n:4,name:'Gustavo Gómez',pos:'DF',club:'Palmeiras',age:33,caps:88,goals:4,nick:'Captain'},
-    {n:5,name:'Júnior Alonso',pos:'DF',club:'Atlético Mineiro',age:33,caps:70,goals:3},
-    {n:6,name:'Fabián Balbuena',pos:'DF',club:'Grêmio',age:34,caps:47,goals:2},
-    {n:7,name:'Omar Alderete',pos:'DF',club:'Sunderland',age:29,caps:35,goals:3},
-    {n:8,name:'Juan José Cáceres',pos:'DF',club:'Dynamo Moscow',age:26,caps:16,goals:0},
-    {n:9,name:'Gustavo Velázquez',pos:'DF',club:'Cerro Porteño',age:35,caps:12,goals:1},
-    {n:10,name:'José Canale',pos:'DF',club:'Lanús',age:29,caps:1,goals:0},
-    {n:11,name:'Alexandro Maidana',pos:'DF',club:'Talleres',age:20,caps:1,goals:0},
-    {n:12,name:'Miguel Almirón',pos:'MF',club:'Atlanta United FC',age:32,caps:75,goals:9,nick:'Miggy'},
-    {n:13,name:'Kaku',pos:'MF',club:'Al-Ain',age:31,caps:32,goals:5},
-    {n:14,name:'Andrés Cubas',pos:'MF',club:'Vancouver Whitecaps',age:30,caps:32,goals:0},
-    {n:15,name:'Ramón Sosa',pos:'MF',club:'Palmeiras',age:26,caps:28,goals:1},
-    {n:16,name:'Diego Gómez',pos:'MF',club:'Brighton',age:23,caps:23,goals:3},
-    {n:17,name:'Damián Bobadilla',pos:'MF',club:'São Paulo',age:24,caps:19,goals:1},
-    {n:18,name:'Braian Ojeda',pos:'MF',club:'Orlando City SC',age:25,caps:16,goals:0},
-    {n:19,name:'Matías Galarza',pos:'MF',club:'Atlanta United FC',age:24,caps:14,goals:2},
-    {n:20,name:'Maurício',pos:'MF',club:'Palmeiras',age:24,caps:2,goals:0},
-    {n:21,name:'Antonio Sanabria',pos:'FW',club:'Cremonese',age:30,caps:47,goals:7},
-    {n:22,name:'Julio Enciso',pos:'FW',club:'Strasbourg',age:22,caps:31,goals:4},
-    {n:23,name:'Gabriel Ávalos',pos:'FW',club:'Independiente',age:34,caps:22,goals:2},
-    {n:24,name:'Álex Arce',pos:'FW',club:'Independiente Rivadavia',age:30,caps:14,goals:1},
-    {n:25,name:'Isidro Pitta',pos:'FW',club:'Red Bull Bragantino',age:26,caps:5,goals:0},
-    {n:26,name:'Gustavo Caballero',pos:'FW',club:'Portsmouth',age:24,caps:2,goals:1},
-  ]},
-  'Türkiye':{coach:'Vincenzo Montella',style:'4-2-3-1',confederation:'UEFA',players:[
-    {n:1,name:'Uğurcan Çakır',pos:'GK',club:'Galatasaray',age:30,caps:38,goals:0},
-    {n:2,name:'Mert Günok',pos:'GK',club:'Fenerbahçe',age:37,caps:37,goals:0},
-    {n:3,name:'Altay Bayındır',pos:'GK',club:'Manchester United',age:28,caps:11,goals:0},
-    {n:4,name:'Merih Demiral',pos:'DF',club:'Al-Ahli',age:28,caps:61,goals:6},
-    {n:5,name:'Zeki Çelik',pos:'DF',club:'Roma',age:29,caps:59,goals:3},
-    {n:6,name:'Çağlar Söyüncü',pos:'DF',club:'Fenerbahçe',age:30,caps:59,goals:2},
-    {n:7,name:'Mert Müldür',pos:'DF',club:'Fenerbahçe',age:27,caps:43,goals:3},
-    {n:8,name:'Ferdi Kadıoğlu',pos:'DF',club:'Brighton',age:26,caps:30,goals:2},
-    {n:9,name:'Ozan Kabak',pos:'DF',club:'TSG Hoffenheim',age:26,caps:28,goals:2},
-    {n:10,name:'Abdülkerim Bardakcı',pos:'DF',club:'Galatasaray',age:31,caps:26,goals:2},
-    {n:11,name:'Eren Elmalı',pos:'DF',club:'Galatasaray',age:25,caps:21,goals:0},
-    {n:12,name:'Samet Akaydin',pos:'DF',club:'Çaykur Rizespor',age:32,caps:18,goals:1},
-    {n:13,name:'Yusuf Akçiçek',pos:'DF',club:'Al-Hilal',age:20,caps:3,goals:0},
-    {n:14,name:'Mustafa Eskihellaç',pos:'DF',club:'Trabzonspor',age:29,caps:3,goals:0},
-    {n:15,name:'Hakan Çalhanoğlu',pos:'MF',club:'Inter Milan',age:32,caps:104,goals:22,nick:'Captain'},
-    {n:16,name:'Kaan Ayhan',pos:'MF',club:'Galatasaray',age:31,caps:72,goals:5},
-    {n:17,name:'Orkun Kökçü',pos:'MF',club:'Beşiktaş',age:25,caps:48,goals:3},
-    {n:18,name:'İsmail Yüksek',pos:'MF',club:'Fenerbahçe',age:27,caps:31,goals:1},
-    {n:19,name:'Salih Özcan',pos:'MF',club:'Borussia Dortmund',age:28,caps:28,goals:1},
-    {n:20,name:'Kerem Aktürkoğlu',pos:'FW',club:'Fenerbahçe',age:27,caps:51,goals:15},
-    {n:21,name:'İrfan Can Kahveci',pos:'FW',club:'Kasımpaşa',age:30,caps:45,goals:6},
-    {n:22,name:'Barış Alper Yılmaz',pos:'FW',club:'Galatasaray',age:26,caps:33,goals:2},
-    {n:23,name:'Arda Güler',pos:'FW',club:'Real Madrid',age:21,caps:28,goals:6,nick:'Arda'},
-    {n:24,name:'Kenan Yıldız',pos:'FW',club:'Juventus',age:21,caps:28,goals:5,nick:'Kenan'},
-    {n:25,name:'Yunus Akgün',pos:'FW',club:'Galatasaray',age:25,caps:17,goals:3},
-    {n:26,name:'Arda Güler',pos:'FW',club:'Real Madrid',age:21,caps:28,goals:6},
-  ]},
-'Germany':{coach:'Julian Nagelsmann',style:'4-2-3-1',confederation:'UEFA',players:[
-    {n:1,name:'Manuel Neuer',pos:'GK',club:'Bayern Munich',age:40,caps:124,goals:0,nick:'Manu'},
-    {n:12,name:'Oliver Baumann',pos:'GK',club:'TSG Hoffenheim',age:36,caps:12,goals:0},
-    {n:21,name:'Alexander Nübel',pos:'GK',club:'VfB Stuttgart',age:29,caps:3,goals:0},
-    {n:2,name:'Antonio Rüdiger',pos:'DF',club:'Real Madrid',age:33,caps:82,goals:3,nick:'Rudi'},
-    {n:3,name:'Waldemar Anton',pos:'DF',club:'Borussia Dortmund',age:29,caps:12,goals:0},
-    {n:4,name:'Jonathan Tah',pos:'DF',club:'Bayern Munich',age:30,caps:46,goals:1},
-    {n:15,name:'Nico Schlotterbeck',pos:'DF',club:'Borussia Dortmund',age:26,caps:26,goals:0},
-    {n:18,name:'Nathaniel Brown',pos:'DF',club:'Eintracht Frankfurt',age:22,caps:4,goals:0},
-    {n:22,name:'David Raum',pos:'DF',club:'RB Leipzig',age:28,caps:36,goals:1},
-    {n:24,name:'Malick Thiaw',pos:'DF',club:'Newcastle United',age:24,caps:5,goals:0},
-    {n:6,name:'Joshua Kimmich',pos:'MF',club:'Bayern Munich',age:31,caps:109,goals:11,nick:'Captain'},
-    {n:5,name:'Aleksandar Pavlović',pos:'MF',club:'Bayern Munich',age:22,caps:10,goals:1},
-    {n:8,name:'Leon Goretzka',pos:'MF',club:'Bayern Munich',age:31,caps:69,goals:15},
-    {n:10,name:'Jamal Musiala',pos:'MF',club:'Bayern Munich',age:23,caps:41,goals:9,nick:'Bambi'},
-    {n:13,name:'Pascal Groß',pos:'MF',club:'Brighton',age:34,caps:18,goals:1},
-    {n:16,name:'Angelo Stiller',pos:'MF',club:'VfB Stuttgart',age:25,caps:7,goals:0},
-    {n:17,name:'Florian Wirtz',pos:'MF',club:'Liverpool',age:23,caps:40,goals:11,nick:'Flori'},
-    {n:19,name:'Leroy Sané',pos:'MF',club:'Galatasaray',age:30,caps:75,goals:16,nick:'Sané'},
-    {n:20,name:'Nadiem Amiri',pos:'MF',club:'Mainz 05',age:29,caps:10,goals:1},
-    {n:23,name:'Felix Nmecha',pos:'MF',club:'Borussia Dortmund',age:25,caps:7,goals:1},
-    {n:25,name:'Lennart Karl',pos:'MF',club:'Bayern Munich',age:18,caps:3,goals:0},
-    {n:7,name:'Kai Havertz',pos:'FW',club:'Arsenal',age:27,caps:57,goals:21,nick:'Kai'},
-    {n:9,name:'Jamie Leweling',pos:'FW',club:'VfB Stuttgart',age:25,caps:4,goals:1},
-    {n:11,name:'Nick Woltemade',pos:'FW',club:'Newcastle United',age:24,caps:11,goals:4},
-    {n:14,name:'Maximilian Beier',pos:'FW',club:'Borussia Dortmund',age:23,caps:8,goals:0},
-    {n:26,name:'Deniz Undav',pos:'FW',club:'VfB Stuttgart',age:29,caps:8,goals:6},
-  ]},
-  'Ivory Coast':{coach:'Emerse Faé',style:'4-3-3',confederation:'CAF',players:[
-    {n:1,name:'Yahia Fofana',pos:'GK',club:'Çaykur Rizespor',age:25,caps:34,goals:0},
-    {n:2,name:'Alban Lafont',pos:'GK',club:'Panathinaikos',age:27,caps:4,goals:0},
-    {n:3,name:'Mohamed Koné',pos:'GK',club:'Charleroi',age:24,caps:0,goals:0},
-    {n:4,name:'Ghislain Konan',pos:'DF',club:'Gil Vicente',age:30,caps:53,goals:0},
-    {n:5,name:'Odilon Kossounou',pos:'DF',club:'Atalanta',age:25,caps:35,goals:0},
-    {n:6,name:'Wilfried Singo',pos:'DF',club:'Galatasaray',age:25,caps:33,goals:1},
-    {n:7,name:'Evan Ndicka',pos:'DF',club:'Roma',age:26,caps:28,goals:0},
-    {n:8,name:'Emmanuel Agbadou',pos:'DF',club:'Beşiktaş',age:29,caps:19,goals:2},
-    {n:9,name:'Guéla Doué',pos:'DF',club:'Strasbourg',age:23,caps:19,goals:2},
-    {n:10,name:'Ousmane Diomande',pos:'DF',club:'Sporting CP',age:22,caps:14,goals:1},
-    {n:11,name:'Christopher Opéri',pos:'DF',club:'İstanbul Başakşehir',age:29,caps:11,goals:0},
-    {n:12,name:'Franck Kessié',pos:'MF',club:'Al-Ahli',age:29,caps:102,goals:15,nick:'Captain'},
-    {n:13,name:'Jean Michaël Seri',pos:'MF',club:'Maribor',age:34,caps:65,goals:4},
-    {n:14,name:'Ibrahim Sangaré',pos:'MF',club:'Nottingham Forest',age:28,caps:57,goals:12},
-    {n:15,name:'Seko Fofana',pos:'MF',club:'Porto',age:31,caps:31,goals:7},
-    {n:16,name:'Christ Inao Oulaï',pos:'MF',club:'Trabzonspor',age:20,caps:8,goals:0},
-    {n:17,name:'Parfait Guiagon',pos:'MF',club:'Charleroi',age:25,caps:5,goals:0},
-    {n:18,name:'Nicolas Pépé',pos:'FW',club:'Villarreal',age:31,caps:54,goals:12},
-    {n:19,name:'Oumar Diakité',pos:'FW',club:'Cercle Brugge',age:22,caps:28,goals:6},
-    {n:20,name:'Simon Adingra',pos:'FW',club:'Monaco',age:24,caps:28,goals:5},
-    {n:21,name:'Evann Guessand',pos:'FW',club:'Crystal Palace',age:24,caps:21,goals:4},
-    {n:22,name:'Amad Diallo',pos:'FW',club:'Manchester United',age:23,caps:18,goals:5,nick:'Amad'},
-    {n:23,name:'Yan Diomande',pos:'FW',club:'RB Leipzig',age:19,caps:9,goals:3},
-    {n:24,name:'Bazoumana Touré',pos:'FW',club:'TSG Hoffenheim',age:20,caps:5,goals:2},
-    {n:25,name:'Elye Wahi',pos:'FW',club:'Nice',age:23,caps:1,goals:0},
-    {n:26,name:'Ange-Yoan Bonny',pos:'FW',club:'Inter Milan',age:22,caps:0,goals:0},
-  ]},
-  'Ecuador':{coach:'Sebastián Beccacece',style:'4-3-3',confederation:'CONMEBOL',players:[
-    {n:1,name:'Hernán Galíndez',pos:'GK',club:'Huracán',age:39,caps:34,goals:0},
-    {n:12,name:'Moisés Ramírez',pos:'GK',club:'Kifisia',age:25,caps:7,goals:0},
-    {n:22,name:'Gonzalo Valle',pos:'GK',club:'LDU Quito',age:30,caps:3,goals:0},
-    {n:2,name:'Félix Torres',pos:'DF',club:'Internacional',age:29,caps:48,goals:5},
-    {n:3,name:'Piero Hincapié',pos:'DF',club:'Arsenal',age:24,caps:51,goals:3},
-    {n:4,name:'Joel Ordóñez',pos:'DF',club:'Club Brugge',age:22,caps:16,goals:0},
-    {n:6,name:'Willian Pacho',pos:'DF',club:'Paris Saint-Germain',age:24,caps:34,goals:2},
-    {n:7,name:'Pervis Estupiñán',pos:'DF',club:'Milan',age:28,caps:53,goals:4},
-    {n:17,name:'Ángelo Preciado',pos:'DF',club:'Atlético Mineiro',age:28,caps:54,goals:0},
-    {n:25,name:'Jackson Porozo',pos:'DF',club:'Tijuana',age:25,caps:9,goals:1},
-    {n:5,name:'Jordy Alcívar',pos:'MF',club:'Independiente del Valle',age:26,caps:10,goals:1},
-    {n:8,name:'Denil Castillo',pos:'MF',club:'Midtjylland',age:22,caps:5,goals:0},
-    {n:9,name:'John Yeboah',pos:'MF',club:'Venezia',age:25,caps:22,goals:3},
-    {n:10,name:'Kendry Páez',pos:'MF',club:'River Plate',age:19,caps:25,goals:2,nick:'Kendry'},
-    {n:14,name:'Alan Minda',pos:'MF',club:'Atlético Mineiro',age:23,caps:19,goals:2},
-    {n:15,name:'Pedro Vite',pos:'MF',club:'UNAM',age:24,caps:16,goals:1},
-    {n:19,name:'Gonzalo Plata',pos:'MF',club:'Flamengo',age:25,caps:49,goals:8},
-    {n:21,name:'Alan Franco',pos:'MF',club:'Atlético Mineiro',age:27,caps:57,goals:1},
-    {n:23,name:'Moisés Caicedo',pos:'MF',club:'Chelsea',age:24,caps:60,goals:3,nick:'Moi'},
-    {n:24,name:'Yaimar Medina',pos:'MF',club:'Genk',age:21,caps:5,goals:0},
-    {n:11,name:'Kevin Rodríguez',pos:'FW',club:'Union Saint-Gilloise',age:26,caps:31,goals:2},
-    {n:13,name:'Enner Valencia',pos:'FW',club:'Pachuca',age:36,caps:105,goals:49,nick:'Superman · Captain'},
-    {n:16,name:'Anthony Valencia',pos:'FW',club:'Antwerp',age:22,caps:2,goals:1},
-    {n:18,name:'Jordy Caicedo',pos:'FW',club:'Huracán',age:28,caps:19,goals:3},
-    {n:20,name:'Nilson Angulo',pos:'FW',club:'Sunderland',age:22,caps:13,goals:1},
-    {n:26,name:'Jeremy Arévalo',pos:'FW',club:'VfB Stuttgart',age:21,caps:3,goals:0},
-  ]},
-  'Curaçao':{coach:'Dick Advocaat',style:'4-3-3',confederation:'CONCACAF',players:[
-    {n:1,name:'Eloy Room',pos:'GK',club:'Miami FC',age:37,caps:71,goals:0},
-    {n:25,name:'Tyrick Bodak',pos:'GK',club:'Telstar',age:24,caps:4,goals:0},
-    {n:26,name:'Trevor Doornbusch',pos:'GK',club:'VVV-Venlo',age:26,caps:7,goals:0},
-    {n:2,name:'Shurandy Sambo',pos:'DF',club:'Sparta Rotterdam',age:24,caps:7,goals:0},
-    {n:3,name:'Juriën Gaari',pos:'DF',club:'Abha',age:32,caps:59,goals:1},
-    {n:4,name:'Roshon van Eijma',pos:'DF',club:'RKC Waalwijk',age:28,caps:27,goals:1},
-    {n:5,name:'Sherel Floranus',pos:'DF',club:'PEC Zwolle',age:27,caps:27,goals:0},
-    {n:18,name:'Armando Obispo',pos:'DF',club:'PSV Eindhoven',age:27,caps:5,goals:0},
-    {n:20,name:'Joshua Brenet',pos:'DF',club:'Kayserispor',age:32,caps:17,goals:1},
-    {n:23,name:'Riechedly Bazoer',pos:'DF',club:'Konyaspor',age:29,caps:4,goals:0},
-    {n:24,name:'Deveron Fonville',pos:'DF',club:'NEC',age:23,caps:1,goals:0},
-    {n:6,name:'Godfried Roemeratoe',pos:'MF',club:'RKC Waalwijk',age:26,caps:27,goals:1},
-    {n:7,name:'Juninho Bacuna',pos:'MF',club:'Volendam',age:28,caps:48,goals:14},
-    {n:8,name:'Livano Comenencia',pos:'MF',club:'Zürich',age:22,caps:19,goals:1},
-    {n:10,name:'Leandro Bacuna',pos:'MF',club:'Iğdır',age:34,caps:71,goals:16,nick:'Captain'},
-    {n:13,name:'Tyrese Noslin',pos:'MF',club:'Telstar',age:23,caps:6,goals:1},
-    {n:15,name:"Ar'jany Martha",pos:'MF',club:'Rotherham United',age:22,caps:8,goals:2},
-    {n:22,name:'Kevin Felida',pos:'MF',club:'Den Bosch',age:26,caps:19,goals:1},
-    {n:9,name:'Jürgen Locadia',pos:'FW',club:'Miami FC',age:32,caps:13,goals:1},
-    {n:11,name:'Jeremy Antonisse',pos:'FW',club:'Kifisia',age:24,caps:26,goals:3},
-    {n:12,name:'Sontje Hansen',pos:'FW',club:'Middlesbrough',age:24,caps:5,goals:1},
-    {n:14,name:'Kenji Gorré',pos:'FW',club:'Maccabi Haifa',age:31,caps:37,goals:6},
-    {n:16,name:'Jearl Margaritha',pos:'FW',club:'Beveren',age:26,caps:21,goals:5},
-    {n:17,name:'Brandley Kuwas',pos:'FW',club:'Volendam',age:33,caps:34,goals:2},
-    {n:19,name:'Gervane Kastaneer',pos:'FW',club:'Terengganu',age:30,caps:28,goals:9},
-    {n:21,name:'Tahith Chong',pos:'FW',club:'Sheffield United',age:26,caps:5,goals:3},
-  ]},
-  'Japan':{coach:'Hajime Moriyasu',style:'4-3-3',confederation:'AFC',players:[
-    {n:1,name:'Zion Suzuki',pos:'GK',club:'Parma',age:23,caps:24,goals:0},
-    {n:12,name:'Kosei Tani',pos:'GK',club:'Brighton',age:23,caps:14,goals:0},
-    {n:23,name:'Ryota Morishita',pos:'GK',club:'Kashima Antlers',age:28,caps:3,goals:0},
-    {n:2,name:'Yukinari Sugawara',pos:'DF',club:'Southampton',age:24,caps:26,goals:1},
-    {n:3,name:'Yuta Nakayama',pos:'DF',club:'Huddersfield Town',age:28,caps:22,goals:2},
-    {n:4,name:'Mao Hosoya',pos:'DF',club:'SC Freiburg',age:24,caps:10,goals:4},
-    {n:5,name:'Ko Itakura',pos:'DF',club:"Borussia M'gladbach",age:27,caps:36,goals:2},
-    {n:6,name:'Wataru Endō',pos:'MF',club:'Liverpool',age:31,caps:61,goals:2,nick:'Captain'},
-    {n:7,name:'Ritsu Doan',pos:'FW',club:'SC Freiburg',age:26,caps:50,goals:16,nick:'Doan'},
-    {n:8,name:'Hidemasa Morita',pos:'MF',club:'Sporting CP',age:29,caps:40,goals:3},
-    {n:9,name:'Ayase Ueda',pos:'FW',club:'Feyenoord',age:26,caps:32,goals:17},
-    {n:10,name:'Shōta Machino',pos:'FW',club:'Huddersfield Town',age:26,caps:10,goals:3},
-    {n:11,name:'Kaoru Mitoma',pos:'FW',club:'Brighton',age:28,caps:43,goals:14,nick:'Mitoma'},
-    {n:13,name:'Ao Tanaka',pos:'MF',club:'Borussia Dortmund',age:26,caps:33,goals:4},
-    {n:14,name:'Junya Ito',pos:'FW',club:'Reims',age:31,caps:50,goals:13},
-    {n:15,name:'Daichi Kamada',pos:'MF',club:'Crystal Palace',age:28,caps:42,goals:14},
-    {n:16,name:'Reo Hatate',pos:'MF',club:'Celtic',age:27,caps:13,goals:2},
-    {n:17,name:'Takehiro Tomiyasu',pos:'DF',club:'Arsenal',age:26,caps:41,goals:1},
-    {n:18,name:'Keito Nakamura',pos:'FW',club:'Reims',age:23,caps:17,goals:5},
-    {n:19,name:'Koki Ogawa',pos:'FW',club:'Wolfsburg',age:25,caps:18,goals:7},
-    {n:20,name:'Takefusa Kubo',pos:'FW',club:'Real Sociedad',age:24,caps:34,goals:10,nick:'Kubo'},
-    {n:21,name:'Teppei Nagamatsu',pos:'DF',club:'Sagan Tosu',age:25,caps:4,goals:0},
-    {n:22,name:'Ryusei Doan',pos:'MF',club:'SC Freiburg',age:23,caps:10,goals:2},
-    {n:24,name:'Kento Hashimoto',pos:'MF',club:'FC Tokyo',age:27,caps:8,goals:1},
-    {n:25,name:'Yuya Osako',pos:'FW',club:'Vissel Kobe',age:35,caps:66,goals:20},
-    {n:26,name:'Shōsei Ono',pos:'MF',club:'Feyenoord',age:23,caps:5,goals:1},
-  ]},
-  'France':{coach:'Didier Deschamps',style:'4-2-3-1',confederation:'UEFA',players:[
-    {n:1,name:'Mike Maignan',pos:'GK',club:'AC Milan',age:29,caps:25,goals:0,nick:'Magic Mike'},
-    {n:16,name:'Alphonse Areola',pos:'GK',club:'West Ham',age:32,caps:10,goals:0},
-    {n:23,name:'Brice Samba',pos:'GK',club:'Lens',age:31,caps:8,goals:0},
-    {n:2,name:'Benjamin Pavard',pos:'DF',club:'Inter Milan',age:29,caps:62,goals:4},
-    {n:3,name:'Ferland Mendy',pos:'DF',club:'Real Madrid',age:30,caps:35,goals:0},
-    {n:4,name:'Dayot Upamecano',pos:'DF',club:'Bayern Munich',age:27,caps:38,goals:1},
-    {n:5,name:'Jules Koundé',pos:'DF',club:'Barcelona',age:27,caps:48,goals:3},
-    {n:17,name:'William Saliba',pos:'DF',club:'Arsenal',age:24,caps:22,goals:0},
-    {n:19,name:'Theo Hernández',pos:'DF',club:'AC Milan',age:27,caps:28,goals:3},
-    {n:21,name:'Lucas Hernández',pos:'DF',club:'PSG',age:29,caps:48,goals:2},
-    {n:6,name:'Eduardo Camavinga',pos:'MF',club:'Real Madrid',age:22,caps:32,goals:2,nick:'Cama'},
-    {n:8,name:'Aurélien Tchouaméni',pos:'MF',club:'Real Madrid',age:25,caps:42,goals:3},
-    {n:13,name:'Boubacar Kamara',pos:'MF',club:'Aston Villa',age:25,caps:14,goals:0},
-    {n:14,name:'Adrien Rabiot',pos:'MF',club:'Marseille',age:30,caps:55,goals:7},
-    {n:20,name:'Youssouf Fofana',pos:'MF',club:'AC Milan',age:26,caps:22,goals:2},
-    {n:22,name:'Bradley Barcola',pos:'FW',club:'PSG',age:22,caps:18,goals:7,nick:'Barcola'},
-    {n:7,name:'Antoine Griezmann',pos:'FW',club:'Atlético Madrid',age:34,caps:141,goals:56,nick:'Grizi'},
-    {n:9,name:'Randal Kolo Muani',pos:'FW',club:'PSG',age:26,caps:27,goals:10},
-    {n:10,name:'Kylian Mbappé',pos:'FW',club:'Real Madrid',age:26,caps:92,goals:57,nick:'Kyky · Captain'},
-    {n:11,name:'Ousmane Dembélé',pos:'FW',club:'PSG',age:28,caps:52,goals:10,nick:'Dembouz'},
-    {n:12,name:'Marcus Thuram',pos:'FW',club:'Inter Milan',age:27,caps:28,goals:9},
-    {n:15,name:'Matteo Guendouzi',pos:'MF',club:'Lazio',age:26,caps:25,goals:1},
-    {n:18,name:'Kingsley Coman',pos:'FW',club:'Bayern Munich',age:29,caps:64,goals:12},
-    {n:24,name:'Michael Olise',pos:'FW',club:'Bayern Munich',age:23,caps:10,goals:3},
-    {n:25,name:'Désiré Doué',pos:'FW',club:'PSG',age:20,caps:8,goals:2,nick:'Doué'},
-    {n:26,name:'Rayan Cherki',pos:'MF',club:'Liverpool',age:21,caps:5,goals:1},
-  ]},
-  'England':{coach:'Thomas Tuchel',style:'4-3-3',confederation:'UEFA',players:[
-    {n:1,name:'Jordan Pickford',pos:'GK',club:'Everton',age:31,caps:72,goals:0},
-    {n:13,name:'Dean Henderson',pos:'GK',club:'Crystal Palace',age:28,caps:8,goals:0},
-    {n:23,name:'Nick Pope',pos:'GK',club:'Newcastle',age:33,caps:20,goals:0},
-    {n:2,name:'Trent Alexander-Arnold',pos:'DF',club:'Real Madrid',age:26,caps:42,goals:4,nick:'TAA'},
-    {n:3,name:'Luke Shaw',pos:'DF',club:'Man Utd',age:29,caps:38,goals:1},
-    {n:4,name:'Declan Rice',pos:'MF',club:'Arsenal',age:26,caps:52,goals:4,nick:'Dec · Captain'},
-    {n:5,name:'John Stones',pos:'DF',club:'Man City',age:31,caps:79,goals:5},
-    {n:6,name:'Marc Guéhi',pos:'DF',club:'Crystal Palace',age:24,caps:22,goals:1},
-    {n:7,name:'Bukayo Saka',pos:'FW',club:'Arsenal',age:23,caps:50,goals:17,nick:'Saka'},
-    {n:8,name:'Jude Bellingham',pos:'MF',club:'Real Madrid',age:21,caps:46,goals:14,nick:'Jude'},
-    {n:9,name:'Harry Kane',pos:'FW',club:'Bayern Munich',age:31,caps:98,goals:68,nick:'Big Cat'},
-    {n:10,name:'Phil Foden',pos:'MF',club:'Man City',age:25,caps:41,goals:12,nick:'Foden'},
-    {n:11,name:'Marcus Rashford',pos:'FW',club:'Aston Villa',age:27,caps:66,goals:19},
-    {n:12,name:'Kieran Trippier',pos:'DF',club:'Newcastle',age:34,caps:52,goals:3},
-    {n:14,name:'Conor Gallagher',pos:'MF',club:'Atlético Madrid',age:25,caps:22,goals:1},
-    {n:15,name:'Kobbie Mainoo',pos:'MF',club:'Man Utd',age:20,caps:16,goals:1},
-    {n:16,name:'Levi Colwill',pos:'DF',club:'Chelsea',age:22,caps:10,goals:0},
-    {n:17,name:'Ivan Toney',pos:'FW',club:'Al-Ahli',age:29,caps:18,goals:5},
-    {n:18,name:'Anthony Gordon',pos:'FW',club:'Newcastle',age:24,caps:16,goals:4},
-    {n:19,name:'Jarrod Bowen',pos:'FW',club:'West Ham',age:28,caps:18,goals:5},
-    {n:20,name:'Ollie Watkins',pos:'FW',club:'Aston Villa',age:29,caps:28,goals:10},
-    {n:21,name:'Ezri Konsa',pos:'DF',club:'Aston Villa',age:27,caps:12,goals:0},
-    {n:22,name:'Cole Palmer',pos:'MF',club:'Chelsea',age:23,caps:15,goals:5,nick:'Palmer'},
-    {n:24,name:'Morgan Gibbs-White',pos:'MF',club:'Nottm Forest',age:25,caps:10,goals:2},
-    {n:25,name:'Curtis Jones',pos:'MF',club:'Liverpool',age:24,caps:5,goals:0},
-    {n:26,name:'Noni Madueke',pos:'FW',club:'Chelsea',age:23,caps:10,goals:3},
-  ]},
-  'Spain':{coach:'Luis de la Fuente',style:'4-3-3',confederation:'UEFA',players:[
-    {n:1,name:'Unai Simón',pos:'GK',club:'Athletic Bilbao',age:28,caps:40,goals:0},
-    {n:13,name:'Robert Sánchez',pos:'GK',club:'Chelsea',age:27,caps:15,goals:0},
-    {n:23,name:'David Raya',pos:'GK',club:'Arsenal',age:29,caps:12,goals:0},
-    {n:2,name:'Dani Carvajal',pos:'DF',club:'Real Madrid',age:33,caps:66,goals:3},
-    {n:3,name:'Alejandro Grimaldo',pos:'DF',club:'Bayer Leverkusen',age:29,caps:28,goals:4},
-    {n:4,name:'Aymeric Laporte',pos:'DF',club:'Al-Nassr',age:31,caps:45,goals:3},
-    {n:12,name:'Pau Cubarsí',pos:'DF',club:'Barcelona',age:18,caps:12,goals:0,nick:'Pau'},
-    {n:14,name:'Iñigo Martínez',pos:'DF',club:'Barcelona',age:34,caps:38,goals:2},
-    {n:18,name:'Dani Vivian',pos:'DF',club:'Athletic Bilbao',age:26,caps:18,goals:0},
-    {n:24,name:'Pedro Porro',pos:'DF',club:'Tottenham',age:26,caps:20,goals:1},
-    {n:5,name:'Rodri',pos:'MF',club:'Man City',age:29,caps:58,goals:5,nick:'Rodri'},
-    {n:6,name:'Mikel Merino',pos:'MF',club:'Arsenal',age:28,caps:38,goals:4},
-    {n:8,name:'Fabian Ruiz',pos:'MF',club:'PSG',age:29,caps:44,goals:7},
-    {n:10,name:'Pedri',pos:'MF',club:'Barcelona',age:23,caps:52,goals:9,nick:'Pedri'},
-    {n:15,name:'Marcos Llorente',pos:'MF',club:'Atlético Madrid',age:30,caps:44,goals:6},
-    {n:16,name:'Martín Zubimendi',pos:'MF',club:'Arsenal',age:26,caps:22,goals:1},
-    {n:20,name:'Aleix García',pos:'MF',club:'Bayer Leverkusen',age:27,caps:10,goals:0},
-    {n:7,name:'Álvaro Morata',pos:'FW',club:'Atlético Madrid',age:32,caps:78,goals:36,nick:'Captain'},
-    {n:9,name:'Mikel Oyarzabal',pos:'FW',club:'Real Sociedad',age:28,caps:44,goals:16},
-    {n:11,name:'Ferran Torres',pos:'FW',club:'Barcelona',age:25,caps:48,goals:20},
-    {n:17,name:'Dani Olmo',pos:'FW',club:'Barcelona',age:27,caps:52,goals:20,nick:'Dani Olmo'},
-    {n:19,name:'Nico Williams',pos:'FW',club:'Athletic Bilbao',age:22,caps:26,goals:8,nick:'Nico'},
-    {n:21,name:'Bryan Zaragoza',pos:'FW',club:'Bayern Munich',age:24,caps:12,goals:3},
-    {n:22,name:'Lamine Yamal',pos:'FW',club:'Barcelona',age:18,caps:32,goals:11,nick:'Lamine'},
-    {n:25,name:'Ayoze Pérez',pos:'FW',club:'Real Betis',age:32,caps:16,goals:6},
-    {n:26,name:'Abel Ruiz',pos:'FW',club:'Atalanta',age:25,caps:8,goals:2},
-  ]},
-  'Portugal':{coach:'Roberto Martínez',style:'4-3-3',confederation:'UEFA',players:[
-    {n:1,name:'Diogo Costa',pos:'GK',club:'Porto',age:25,caps:26,goals:0},
-    {n:12,name:'Rui Patrício',pos:'GK',club:'Roma',age:37,caps:105,goals:0},
-    {n:22,name:'José Sá',pos:'GK',club:'Wolves',age:32,caps:15,goals:0},
-    {n:2,name:'João Cancelo',pos:'DF',club:'Al-Hilal',age:31,caps:68,goals:5,nick:'Cancelo'},
-    {n:3,name:'Nuno Mendes',pos:'DF',club:'PSG',age:23,caps:34,goals:2},
-    {n:4,name:'Rúben Dias',pos:'DF',club:'Man City',age:28,caps:60,goals:4,nick:'Dias'},
-    {n:5,name:'Pepe',pos:'DF',club:'Porto',age:42,caps:141,goals:8},
-    {n:13,name:'Danilo Pereira',pos:'DF',club:'PSG',age:33,caps:65,goals:3},
-    {n:16,name:'Nelson Semedo',pos:'DF',club:'Wolves',age:31,caps:42,goals:0},
-    {n:20,name:'Diogo Dalot',pos:'DF',club:'Man Utd',age:26,caps:36,goals:2},
-    {n:6,name:'Vitinha',pos:'MF',club:'PSG',age:25,caps:42,goals:6,nick:'Vitinha'},
-    {n:8,name:'João Palhinha',pos:'MF',club:'Bayern Munich',age:29,caps:42,goals:2},
-    {n:14,name:'William Carvalho',pos:'MF',club:'Real Betis',age:33,caps:80,goals:4},
-    {n:18,name:'Renato Sanches',pos:'MF',club:'Sporting CP',age:28,caps:45,goals:3},
-    {n:19,name:'Matheus Nunes',pos:'MF',club:'Man City',age:26,caps:24,goals:2},
-    {n:21,name:'Rúben Neves',pos:'MF',club:'Al-Hilal',age:28,caps:60,goals:8},
-    {n:7,name:'Cristiano Ronaldo',pos:'FW',club:'Al-Nassr',age:41,caps:215,goals:135,nick:'CR7 · Captain'},
-    {n:9,name:'Gonçalo Ramos',pos:'FW',club:'PSG',age:24,caps:28,goals:16},
-    {n:10,name:'Bernardo Silva',pos:'FW',club:'Man City',age:31,caps:85,goals:23,nick:'Bernardo'},
-    {n:11,name:'João Félix',pos:'FW',club:'Barcelona',age:25,caps:50,goals:11,nick:'Fênix'},
-    {n:15,name:'Rafael Leão',pos:'FW',club:'AC Milan',age:26,caps:48,goals:14,nick:'Rafa'},
-    {n:17,name:'Pedro Neto',pos:'FW',club:'Chelsea',age:25,caps:36,goals:7},
-    {n:23,name:'Diogo Jota',pos:'FW',club:'Liverpool',age:28,caps:54,goals:23},
-    {n:24,name:'Francisco Conceição',pos:'FW',club:'Juventus',age:22,caps:14,goals:4},
-    {n:25,name:'André',pos:'MF',club:'Wolverhampton',age:23,caps:10,goals:0},
-    {n:26,name:'Rodrigo Gomes',pos:'FW',club:'Wolverhampton',age:22,caps:5,goals:1},
-  ]},
-  'Argentina':{coach:'Lionel Scaloni',style:'4-3-3',confederation:'CONMEBOL',players:[
-    {n:1,name:'Emiliano Martínez',pos:'GK',club:'Aston Villa',age:32,caps:58,goals:0,nick:'Dibu'},
-    {n:12,name:'Gerónimo Rulli',pos:'GK',club:'Atlético Madrid',age:33,caps:17,goals:0},
-    {n:23,name:'Walter Benítez',pos:'GK',club:'PSV',age:33,caps:9,goals:0},
-    {n:2,name:'Nahuel Molina',pos:'DF',club:'Atlético Madrid',age:27,caps:42,goals:5},
-    {n:3,name:'Nicolás Tagliafico',pos:'DF',club:'Lyon',age:32,caps:64,goals:3},
-    {n:4,name:'Gonzalo Montiel',pos:'DF',club:'Nottm Forest',age:28,caps:46,goals:2},
-    {n:6,name:'Germán Pezzella',pos:'DF',club:'Real Betis',age:34,caps:50,goals:3},
-    {n:13,name:'Cristian Romero',pos:'DF',club:'Tottenham',age:27,caps:42,goals:2,nick:'Cuti'},
-    {n:19,name:'Nicolás Otamendi',pos:'DF',club:'Benfica',age:37,caps:112,goals:11},
-    {n:25,name:'Lisandro Martínez',pos:'DF',club:'Man Utd',age:27,caps:34,goals:1},
-    {n:5,name:'Leandro Paredes',pos:'MF',club:'Roma',age:31,caps:68,goals:3},
-    {n:7,name:'Rodrigo De Paul',pos:'MF',club:'Atlético Madrid',age:31,caps:69,goals:7},
-    {n:8,name:'Enzo Fernández',pos:'MF',club:'Chelsea',age:24,caps:44,goals:7,nick:'Enzo'},
-    {n:14,name:'Exequiel Palacios',pos:'MF',club:'Bayer Leverkusen',age:26,caps:28,goals:1},
-    {n:16,name:'Guido Rodríguez',pos:'MF',club:'Real Betis',age:31,caps:52,goals:2},
-    {n:17,name:'Alejandro Garnacho',pos:'FW',club:'Man Utd',age:21,caps:26,goals:9,nick:'Garnacho'},
-    {n:18,name:'Valentín Carboni',pos:'MF',club:'Inter Milan',age:21,caps:6,goals:1},
-    {n:20,name:'Paulo Dybala',pos:'FW',club:'Roma',age:31,caps:42,goals:11,nick:'La Joya'},
-    {n:10,name:'Lionel Messi',pos:'FW',club:'Inter Miami',age:38,caps:190,goals:112,nick:'La Pulga · Captain'},
-    {n:11,name:'Ángel Di María',pos:'FW',club:'Benfica',age:37,caps:144,goals:31,nick:'Fideo'},
-    {n:9,name:'Julián Álvarez',pos:'FW',club:'Atlético Madrid',age:25,caps:38,goals:18,nick:'La Araña'},
-    {n:22,name:'Lautaro Martínez',pos:'FW',club:'Inter Milan',age:27,caps:64,goals:30,nick:'El Toro'},
-    {n:21,name:'Nicolás González',pos:'FW',club:'Juventus',age:27,caps:30,goals:8},
-    {n:24,name:'Thiago Almada',pos:'MF',club:'Botafogo',age:24,caps:16,goals:3},
-    {n:15,name:'Gerónimo Pratto',pos:'FW',club:'River Plate',age:34,caps:5,goals:1},
-    {n:26,name:'Brian Aguado',pos:'DF',club:'Girona',age:24,caps:3,goals:0},
-  ]},
-  'Belgium':{coach:'Domenico Tedesco',style:'4-2-3-1',confederation:'UEFA',players:[
-    {n:1,name:'Thibaut Courtois',pos:'GK',club:'Real Madrid',age:33,caps:110,goals:0,nick:'Thibaut'},
-    {n:12,name:'Simon Mignolet',pos:'GK',club:'Club Brugge',age:36,caps:30,goals:0},
-    {n:23,name:'Matz Sels',pos:'GK',club:'Nottm Forest',age:33,caps:8,goals:0},
-    {n:2,name:'Timothy Castagne',pos:'DF',club:'Fulham',age:29,caps:44,goals:3},
-    {n:3,name:'Arthur Theate',pos:'DF',club:'Rennes',age:25,caps:28,goals:2},
-    {n:4,name:'Wout Faes',pos:'DF',club:'Leicester',age:27,caps:24,goals:2},
-    {n:5,name:'Zeno Debast',pos:'DF',club:'Sporting CP',age:22,caps:18,goals:0},
-    {n:15,name:'Jan Vertonghen',pos:'DF',club:'Anderlecht',age:38,caps:160,goals:12,nick:'Jan'},
-    {n:21,name:'Maxim De Cuyper',pos:'DF',club:'Club Brugge',age:24,caps:14,goals:2},
-    {n:22,name:'Thomas Meunier',pos:'DF',club:'Trabzonspor',age:33,caps:78,goals:8},
-    {n:6,name:'Axel Witsel',pos:'MF',club:'Atlético Madrid',age:36,caps:133,goals:12},
-    {n:8,name:'Youri Tielemans',pos:'MF',club:'Aston Villa',age:28,caps:72,goals:12},
-    {n:14,name:'Kevin De Bruyne',pos:'MF',club:'Napoli',age:34,caps:106,goals:28,nick:'KDB'},
-    {n:16,name:'Amadou Onana',pos:'MF',club:'Aston Villa',age:24,caps:28,goals:3},
-    {n:20,name:'Aster Vranckx',pos:'MF',club:'Wolfsburg',age:22,caps:14,goals:1},
-    {n:7,name:'Dries Mertens',pos:'FW',club:'Monza',age:38,caps:109,goals:22},
-    {n:9,name:'Romelu Lukaku',pos:'FW',club:'Napoli',age:32,caps:110,goals:71,nick:'Big Rom · Captain'},
-    {n:10,name:'Lois Openda',pos:'FW',club:'RB Leipzig',age:25,caps:32,goals:14},
-    {n:11,name:'Leandro Trossard',pos:'FW',club:'Arsenal',age:30,caps:44,goals:14},
-    {n:17,name:'Johan Bakayoko',pos:'FW',club:'PSV',age:23,caps:18,goals:6},
-    {n:18,name:'Charles De Ketelaere',pos:'FW',club:'Atalanta',age:24,caps:26,goals:8},
-    {n:19,name:'Yannick Carrasco',pos:'FW',club:'Al-Shabab',age:31,caps:65,goals:12},
-    {n:24,name:'Orel Mangala',pos:'MF',club:'Nottm Forest',age:27,caps:14,goals:1},
-    {n:25,name:'Arthur Vermeeren',pos:'MF',club:'Atlético Madrid',age:20,caps:12,goals:0},
-    {n:26,name:'Julien Duranville',pos:'FW',club:'Borussia Dortmund',age:19,caps:8,goals:2},
-    {n:13,name:'Wout Weghorst',pos:'FW',club:'Burnley',age:32,caps:12,goals:4},
-  ]},
-  'Netherlands':{coach:'Ronald Koeman',style:'4-2-3-1',confederation:'UEFA',players:[
-    {n:1,name:'Bart Verbruggen',pos:'GK',club:'Brighton',age:23,caps:20,goals:0},
-    {n:12,name:'Mark Flekken',pos:'GK',club:'Brentford',age:31,caps:16,goals:0},
-    {n:23,name:'Remko Pasveer',pos:'GK',club:'Ajax',age:41,caps:8,goals:0},
-    {n:2,name:'Denzel Dumfries',pos:'DF',club:'Inter Milan',age:29,caps:60,goals:8,nick:'Denzel'},
-    {n:3,name:'Owen Wijndal',pos:'DF',club:'Ajax',age:25,caps:26,goals:1},
-    {n:4,name:'Virgil van Dijk',pos:'DF',club:'Liverpool',age:34,caps:64,goals:7,nick:'VVD · Captain'},
-    {n:5,name:'Stefan de Vrij',pos:'DF',club:'Inter Milan',age:33,caps:60,goals:4},
-    {n:17,name:'Jeremie Frimpong',pos:'DF',club:'Bayer Leverkusen',age:24,caps:20,goals:4},
-    {n:21,name:'Jurriën Timber',pos:'DF',club:'Arsenal',age:24,caps:24,goals:1},
-    {n:22,name:'Nathan Aké',pos:'DF',club:'Man City',age:30,caps:44,goals:3},
-    {n:6,name:'Frenkie de Jong',pos:'MF',club:'Barcelona',age:28,caps:62,goals:5,nick:'Frenkie'},
-    {n:8,name:'Teun Koopmeiners',pos:'MF',club:'Juventus',age:27,caps:42,goals:9},
-    {n:14,name:'Davy Klaassen',pos:'MF',club:'Ajax',age:32,caps:58,goals:11},
-    {n:15,name:'Ryan Gravenberch',pos:'MF',club:'Liverpool',age:23,caps:24,goals:3},
-    {n:16,name:'Tijjani Reijnders',pos:'MF',club:'AC Milan',age:27,caps:28,goals:6},
-    {n:19,name:'Xavi Simons',pos:'MF',club:'RB Leipzig',age:22,caps:24,goals:7,nick:'Xavi'},
-    {n:20,name:'Quinten Timber',pos:'MF',club:'Feyenoord',age:23,caps:12,goals:2},
-    {n:7,name:'Steven Bergwijn',pos:'FW',club:'Ajax',age:27,caps:40,goals:9},
-    {n:9,name:'Wout Weghorst',pos:'FW',club:'Burnley',age:32,caps:42,goals:15},
-    {n:10,name:'Memphis Depay',pos:'FW',club:'Corinthians',age:31,caps:96,goals:46,nick:'Memphis'},
-    {n:11,name:'Cody Gakpo',pos:'FW',club:'Liverpool',age:26,caps:42,goals:19,nick:'Cody'},
-    {n:13,name:'Donyell Malen',pos:'FW',club:'Borussia Dortmund',age:26,caps:36,goals:12},
-    {n:18,name:'Brian Brobbey',pos:'FW',club:'Ajax',age:23,caps:18,goals:6},
-    {n:24,name:'Noa Lang',pos:'FW',club:'PSV',age:26,caps:14,goals:5},
-    {n:25,name:'Kenneth Taylor',pos:'MF',club:'Ajax',age:23,caps:8,goals:1},
-    {n:26,name:'Willy Kerkez',pos:'DF',club:'Bournemouth',age:21,caps:6,goals:0},
-  ]},
-  'Croatia':{coach:'Zlatko Dalić',style:'4-3-3',confederation:'UEFA',players:[
-    {n:1,name:'Dominik Livaković',pos:'GK',club:'Fenerbahçe',age:29,caps:48,goals:0,nick:'Livo'},
-    {n:12,name:'Ivo Grbić',pos:'GK',club:'Atlético Madrid',age:29,caps:14,goals:0},
-    {n:23,name:'Nediljko Labrović',pos:'GK',club:'HNK Rijeka',age:28,caps:7,goals:0},
-    {n:2,name:'Josip Juranović',pos:'DF',club:'Celtic',age:29,caps:42,goals:2},
-    {n:3,name:'Borna Sosa',pos:'DF',club:'Stuttgart',age:27,caps:32,goals:4},
-    {n:4,name:'Joško Gvardiol',pos:'DF',club:'Man City',age:23,caps:44,goals:4,nick:'Gvardiol'},
-    {n:5,name:'Martin Erlić',pos:'DF',club:'Sassuolo',age:27,caps:26,goals:2},
-    {n:20,name:'Šime Vrsaljko',pos:'DF',club:'Atlético Madrid',age:33,caps:64,goals:4},
-    {n:21,name:'Domagoj Vida',pos:'DF',club:'AEK Athens',age:35,caps:104,goals:5},
-    {n:22,name:'Petar Sucic',pos:'MF',club:'Dinamo Zagreb',age:22,caps:18,goals:3},
-    {n:10,name:'Luka Modrić',pos:'MF',club:'Real Madrid',age:39,caps:180,goals:25,nick:'Luka · Captain'},
-    {n:8,name:'Mateo Kovačić',pos:'MF',club:'Man City',age:31,caps:92,goals:6,nick:'Kova'},
-    {n:11,name:'Marcelo Brozović',pos:'MF',club:'Al-Nassr',age:32,caps:86,goals:11},
-    {n:6,name:'Lovro Majer',pos:'MF',club:'Rennes',age:27,caps:34,goals:4},
-    {n:13,name:'Nikola Vlašić',pos:'MF',club:'Torino',age:27,caps:54,goals:13},
-    {n:14,name:'Martin Baturina',pos:'MF',club:'Chelsea',age:22,caps:14,goals:3},
-    {n:17,name:'Luka Ivanušec',pos:'MF',club:'Dinamo Zagreb',age:25,caps:22,goals:5},
-    {n:7,name:'Ivan Perišić',pos:'FW',club:'Hajduk Split',age:36,caps:128,goals:37},
-    {n:9,name:'Andrej Kramarić',pos:'FW',club:'Hoffenheim',age:33,caps:72,goals:30},
-    {n:15,name:'Ante Budimir',pos:'FW',club:'Osasuna',age:33,caps:26,goals:10},
-    {n:16,name:'Bruno Petković',pos:'FW',club:'Dinamo Zagreb',age:30,caps:36,goals:12},
-    {n:18,name:'Mislav Oršić',pos:'FW',club:'Celta Vigo',age:32,caps:44,goals:15},
-    {n:19,name:'Dario Španović',pos:'DF',club:'Dinamo Zagreb',age:22,caps:6,goals:0},
-    {n:24,name:'Antonio Marin',pos:'FW',club:'Dinamo Zagreb',age:25,caps:10,goals:2},
-    {n:25,name:'Niko Moro',pos:'MF',club:'Celta Vigo',age:27,caps:5,goals:0},
-    {n:26,name:'Igor Matanović',pos:'FW',club:'Eintracht Frankfurt',age:22,caps:4,goals:1},
-  ]},
-  'Senegal':{coach:'Aliou Cissé',style:'4-3-3',confederation:'CAF',players:[
-    {n:1,name:'Édouard Mendy',pos:'GK',club:'Al-Ahli',age:33,caps:45,goals:0},
-    {n:12,name:'Alfred Gomis',pos:'GK',club:'Rennes',age:31,caps:26,goals:0},
-    {n:23,name:'Seny Dieng',pos:'GK',club:'Middlesbrough',age:30,caps:14,goals:0},
-    {n:2,name:'Bouna Sarr',pos:'DF',club:'Bayern Munich',age:32,caps:24,goals:0},
-    {n:3,name:'Abdou Diallo',pos:'DF',club:'RB Leipzig',age:28,caps:38,goals:1},
-    {n:4,name:'Kalidou Koulibaly',pos:'DF',club:'Al-Hilal',age:34,caps:84,goals:5,nick:'Koulibaly'},
-    {n:5,name:'Moussa Niakhaté',pos:'DF',club:'Nottm Forest',age:28,caps:26,goals:1},
-    {n:13,name:'Fodé Ballo-Touré',pos:'DF',club:'AC Milan',age:28,caps:25,goals:0},
-    {n:20,name:'Ismail Jakobs',pos:'DF',club:'Monaco',age:24,caps:18,goals:2},
-    {n:22,name:'Formose Mendy',pos:'DF',club:'Reims',age:24,caps:10,goals:0},
-    {n:6,name:'Nampalys Mendy',pos:'MF',club:'Leicester',age:33,caps:42,goals:1},
-    {n:8,name:'Cheikhou Kouyaté',pos:'MF',club:'Crystal Palace',age:35,caps:94,goals:7},
-    {n:14,name:'Habib Diallo',pos:'FW',club:'Strasbourg',age:30,caps:32,goals:12},
-    {n:15,name:'Pape Matar Sarr',pos:'MF',club:'Tottenham',age:23,caps:22,goals:3,nick:'Pape Matar'},
-    {n:16,name:'Lamine Camara',pos:'MF',club:'Monaco',age:21,caps:16,goals:5},
-    {n:17,name:'Pathe Ciss',pos:'MF',club:'Rayo Vallecano',age:31,caps:22,goals:1},
-    {n:19,name:'Krepin Diatta',pos:'FW',club:'Monaco',age:25,caps:36,goals:8},
-    {n:21,name:'Mamadou Loum',pos:'MF',club:'Almería',age:28,caps:26,goals:2},
-    {n:7,name:'Ismaïla Sarr',pos:'FW',club:'Crystal Palace',age:27,caps:56,goals:16},
-    {n:9,name:'Boulaye Dia',pos:'FW',club:'Lazio',age:28,caps:36,goals:14},
-    {n:10,name:'Sadio Mané',pos:'FW',club:'Al-Nassr',age:33,caps:102,goals:36,nick:'The Lion · Captain'},
-    {n:11,name:'Iliman Ndiaye',pos:'FW',club:'Marseille',age:25,caps:28,goals:8},
-    {n:18,name:'Nicolas Jackson',pos:'FW',club:'Chelsea',age:24,caps:22,goals:11,nick:'Nicolas'},
-    {n:24,name:'Abdallah Sima',pos:'FW',club:'Brighton',age:23,caps:14,goals:4},
-    {n:25,name:'Cherif Ndiaye',pos:'FW',club:'Kasımpaşa',age:26,caps:10,goals:3},
-    {n:26,name:'Pape Guèye',pos:'MF',club:'Marseille',age:26,caps:18,goals:2},
-  ]},
-  'Colombia':{coach:'Néstor Lorenzo',style:'4-3-3',confederation:'CONMEBOL',players:[
-    {n:1,name:'Camilo Vargas',pos:'GK',club:'Atlas',age:33,caps:42,goals:0},
-    {n:12,name:'David Ospina',pos:'GK',club:'Al-Qadsiah',age:36,caps:118,goals:0,nick:'Ospi'},
-    {n:23,name:'Álvaro Montero',pos:'GK',club:'Millonarios',age:28,caps:6,goals:0},
-    {n:2,name:'Daniel Muñoz',pos:'DF',club:'Crystal Palace',age:28,caps:36,goals:4},
-    {n:3,name:'Johan Mojica',pos:'DF',club:'Girona',age:32,caps:28,goals:2},
-    {n:4,name:'Dávinson Sánchez',pos:'DF',club:'Galatasaray',age:28,caps:58,goals:4},
-    {n:5,name:'Yerry Mina',pos:'DF',club:'Fiorentina',age:30,caps:54,goals:9},
-    {n:13,name:'Carlos Cuesta',pos:'DF',club:'KRC Genk',age:26,caps:16,goals:1},
-    {n:16,name:'Jorge Carrascal',pos:'MF',club:'Dynamo Moscow',age:26,caps:24,goals:6},
-    {n:20,name:'Déiver Machado',pos:'DF',club:'Lens',age:28,caps:16,goals:1},
-    {n:6,name:'Wilmar Barrios',pos:'MF',club:'Zenit',age:31,caps:60,goals:2},
-    {n:8,name:'Mateus Uribe',pos:'MF',club:'Porto',age:33,caps:58,goals:8},
-    {n:10,name:'James Rodríguez',pos:'MF',club:'Rayo Vallecano',age:33,caps:104,goals:30,nick:'James · Captain'},
-    {n:14,name:'Gustavo Puerta',pos:'MF',club:'Bayer Leverkusen',age:22,caps:14,goals:2},
-    {n:18,name:'Jefferson Lerma',pos:'MF',club:'Crystal Palace',age:30,caps:60,goals:3},
-    {n:22,name:'Richard Ríos',pos:'MF',club:'Palmeiras',age:24,caps:20,goals:3},
-    {n:7,name:'Luis Díaz',pos:'FW',club:'Liverpool',age:28,caps:58,goals:18,nick:'Lucho'},
-    {n:9,name:'Radamel Falcao',pos:'FW',club:'Millonarios',age:39,caps:115,goals:37,nick:'El Tigre'},
-    {n:11,name:'Jhon Arias',pos:'FW',club:'Fluminense',age:27,caps:28,goals:10},
-    {n:15,name:'Jhon Córdoba',pos:'FW',club:'Krasnodar',age:31,caps:26,goals:9},
-    {n:17,name:'Roger Martínez',pos:'FW',club:'América',age:28,caps:20,goals:5},
-    {n:19,name:'Rafael Santos Borré',pos:'FW',club:'Werder Bremen',age:29,caps:32,goals:9},
-    {n:21,name:'Miguel Borja',pos:'FW',club:'River Plate',age:32,caps:34,goals:12},
-    {n:24,name:'Kevin Castaño',pos:'MF',club:'Mallorca',age:25,caps:8,goals:0},
-    {n:25,name:'Edier Ocampo',pos:'FW',club:'Júbilo Iwata',age:28,caps:6,goals:1},
-    {n:26,name:'Fredy Guarín',pos:'MF',club:'Millonarios',age:38,caps:64,goals:7},
-  ]},
-  'Uruguay':{coach:'Marcelo Bielsa',style:'4-3-3',confederation:'CONMEBOL',players:[
-    {n:1,name:'Sergio Rochet',pos:'GK',club:'Nacional',age:30,caps:42,goals:0},
-    {n:12,name:'Sebastián Sosa',pos:'GK',club:'Independiente',age:37,caps:12,goals:0},
-    {n:23,name:'Santiago Mele',pos:'GK',club:'Junior',age:27,caps:6,goals:0},
-    {n:2,name:'Nahitan Nández',pos:'DF',club:'Cagliari',age:29,caps:62,goals:4},
-    {n:3,name:'Mathías Olivera',pos:'DF',club:'Napoli',age:27,caps:40,goals:2},
-    {n:4,name:'Ronald Araújo',pos:'DF',club:'Barcelona',age:26,caps:46,goals:4,nick:'Captain'},
-    {n:5,name:'José María Giménez',pos:'DF',club:'Atlético Madrid',age:30,caps:65,goals:5},
-    {n:13,name:'Guillermo Varela',pos:'DF',club:'Flamengo',age:32,caps:30,goals:1},
-    {n:19,name:'Agustín Rogel',pos:'DF',club:'Hertha BSC',age:26,caps:22,goals:0},
-    {n:22,name:'Facundo González',pos:'DF',club:'Valencia',age:23,caps:12,goals:0},
-    {n:6,name:'Rodrigo Bentancur',pos:'MF',club:'Tottenham',age:27,caps:68,goals:7},
-    {n:8,name:'Lucas Torreira',pos:'MF',club:'Galatasaray',age:29,caps:66,goals:5},
-    {n:14,name:'Nicolás De La Cruz',pos:'MF',club:'Flamengo',age:27,caps:52,goals:10},
-    {n:15,name:'Manuel Ugarte',pos:'MF',club:'Man Utd',age:24,caps:34,goals:1,nick:'Ugarte'},
-    {n:16,name:'Matías Vecino',pos:'MF',club:'Lazio',age:33,caps:80,goals:7},
-    {n:20,name:'Facundo Pellistri',pos:'FW',club:'Man Utd',age:23,caps:22,goals:3},
-    {n:21,name:'Giorgian De Arrascaeta',pos:'MF',club:'Flamengo',age:30,caps:62,goals:12},
-    {n:7,name:'Nicolás Lodeiro',pos:'MF',club:'Seattle Sounders',age:36,caps:82,goals:14},
-    {n:9,name:'Darwin Núñez',pos:'FW',club:'Liverpool',age:26,caps:44,goals:24,nick:'Darwin'},
-    {n:10,name:'Federico Valverde',pos:'MF',club:'Real Madrid',age:27,caps:58,goals:12,nick:'Fede'},
-    {n:11,name:'Luis Suárez',pos:'FW',club:'Nacional',age:39,caps:143,goals:69,nick:'El Pistolero'},
-    {n:17,name:'Agustín Canobbio',pos:'FW',club:'Athletic Bilbao',age:25,caps:18,goals:3},
-    {n:18,name:'Maximiliano Araújo',pos:'FW',club:'Sporting CP',age:24,caps:20,goals:5},
-    {n:24,name:'Luciano Rodríguez',pos:'FW',club:'Nacional',age:22,caps:10,goals:3},
-    {n:25,name:'Ignacio Araújo',pos:'DF',club:'Cádiz',age:22,caps:6,goals:0},
-    {n:26,name:'Sebastián Cáceres',pos:'DF',club:'América',age:26,caps:16,goals:1},
-  ]},
-  'Cape Verde':{coach:'Bubista',style:'4-3-3',confederation:'CAF',players:[
-    {n:1,name:'Vozinha',pos:'GK',club:'Celta Vigo',age:31,caps:38,goals:0},
-    {n:12,name:'Rafael Fernandes',pos:'GK',club:'Académica',age:28,caps:8,goals:0},
-    {n:23,name:'Marcelo',pos:'GK',club:'Marítimo',age:29,caps:5,goals:0},
-    {n:2,name:'Logan Costa',pos:'DF',club:'Toulouse',age:25,caps:30,goals:2},
-    {n:3,name:'Diney',pos:'DF',club:'Villarreal',age:28,caps:28,goals:1},
-    {n:4,name:'Stopira',pos:'DF',club:'Girona',age:36,caps:70,goals:3,nick:'Captain'},
-    {n:5,name:'Ryan Mendes',pos:'DF',club:'Lille',age:35,caps:55,goals:3},
-    {n:6,name:'Júlio Tavares',pos:'DF',club:'Dijon',age:38,caps:45,goals:2},
-    {n:14,name:'Zé Lopes',pos:'DF',club:'FC Arouca',age:27,caps:18,goals:0},
-    {n:15,name:'Sandro Mendes',pos:'DF',club:'Sporting Braga',age:26,caps:14,goals:0},
-    {n:7,name:'Garry Rodrigues',pos:'MF',club:'Al-Gharafa',age:32,caps:55,goals:12},
-    {n:8,name:'Kenny Rocha Santos',pos:'MF',club:'Toulouse',age:28,caps:38,goals:4},
-    {n:10,name:'Jamiro Monteiro',pos:'MF',club:'Rio Ave',age:31,caps:52,goals:8},
-    {n:11,name:'Lisandro',pos:'MF',club:'Paços de Ferreira',age:30,caps:32,goals:5},
-    {n:16,name:'Marco Soares',pos:'MF',club:'St. Gallen',age:26,caps:18,goals:2},
-    {n:17,name:'Ronie Andersson',pos:'MF',club:'Norrköping',age:24,caps:12,goals:3},
-    {n:9,name:'Djaniny',pos:'FW',club:'Al-Qadsiah',age:31,caps:62,goals:22},
-    {n:13,name:'Vagner',pos:'FW',club:'Farense',age:33,caps:45,goals:8},
-    {n:18,name:'Hélder Rodrigues',pos:'FW',club:'Nacional',age:28,caps:20,goals:5},
-    {n:19,name:'Jovane Cabral',pos:'FW',club:'Sporting CP',age:27,caps:28,goals:7},
-    {n:20,name:'Dion Lopy',pos:'FW',club:'OFI Crete',age:25,caps:14,goals:3},
-    {n:21,name:'Steven Fortes',pos:'DF',club:'Lausanne-Sport',age:33,caps:40,goals:2},
-    {n:22,name:'Bryan Teixeira',pos:'FW',club:'Academica de Coimbra',age:24,caps:8,goals:2},
-    {n:24,name:'Ivanildo Fernandes',pos:'MF',club:'Farense',age:27,caps:6,goals:1},
-    {n:25,name:'Robinho Moreno',pos:'MF',club:'Cova da Piedade',age:25,caps:4,goals:0},
-    {n:26,name:'Edy',pos:'FW',club:'Nacional',age:24,caps:3,goals:0},
-  ]},
-  'Saudi Arabia':{coach:'Hervé Renard',style:'4-2-3-1',confederation:'AFC',players:[
-    {n:1,name:'Mohammed Al-Owais',pos:'GK',club:'Al-Hilal',age:32,caps:66,goals:0,nick:'Captain'},
-    {n:12,name:'Mohammed Al-Yami',pos:'GK',club:'Al-Ahli',age:30,goals:0,caps:18},
-    {n:23,name:'Nawaf Al-Aqidi',pos:'GK',club:'Al-Qadsiah',age:24,goals:0,caps:5},
-    {n:2,name:'Sultan Al-Ghannam',pos:'DF',club:'Al-Hilal',age:29,goals:0,caps:38},
-    {n:3,name:'Yasser Al-Shahrani',pos:'DF',club:'Al-Hilal',age:31,goals:2,caps:72},
-    {n:4,name:'Abdulelah Al-Amri',pos:'DF',club:'Al-Hilal',age:26,goals:1,caps:28},
-    {n:5,name:'Ali Al-Bulayhi',pos:'DF',club:'Al-Hilal',age:34,goals:1,caps:92},
-    {n:6,name:'Hassan Tambakti',pos:'DF',club:'Al-Hilal',age:25,goals:2,caps:34},
-    {n:13,name:'Saud Abdulhamid',pos:'DF',club:'Roma',age:26,goals:2,caps:42},
-    {n:15,name:'Mohammed Al-Breik',pos:'DF',club:'Al-Qadsiah',age:26,goals:0,caps:18},
-    {n:7,name:'Riyadh Mahrez',pos:'FW',club:'Al-Ahli',age:33,goals:36,caps:82,nick:'Mahrez'},
-    {n:8,name:'Sami Al-Najei',pos:'MF',club:'Al-Fateh',age:30,goals:5,caps:52},
-    {n:10,name:'Salem Al-Dawsari',pos:'FW',club:'Al-Hilal',age:32,goals:25,caps:92,nick:'Salem'},
-    {n:11,name:'Mohammed Kanno',pos:'MF',club:'Al-Hilal',age:28,goals:8,caps:56},
-    {n:14,name:'Nasser Al-Dawsari',pos:'MF',club:'Al-Hilal',age:29,goals:8,caps:48},
-    {n:16,name:'Abdulelah Al-Malki',pos:'MF',club:'Al-Shabab',age:27,goals:3,caps:32},
-    {n:17,name:'Hattan Bahbir',pos:'FW',club:'Al-Shabab',age:28,goals:10,caps:44},
-    {n:18,name:'Abdullah Al-Hamdan',pos:'FW',club:'Al-Shabab',age:25,goals:14,caps:38},
-    {n:19,name:'Firas Al-Buraikan',pos:'FW',club:'Al-Fateh',age:24,goals:12,caps:38},
-    {n:20,name:'Saleh Al-Shehri',pos:'FW',club:'Al-Hilal',age:31,goals:15,caps:50},
-    {n:21,name:'Ali Al-Hassan',pos:'MF',club:'Al-Ahli',age:26,goals:2,caps:20},
-    {n:22,name:'Hamad Al-Yami',pos:'MF',club:'Al-Qadsiah',age:28,goals:4,caps:26},
-    {n:9,name:'Ali Al-Qahtani',pos:'FW',club:'Al-Hilal',age:27,goals:10,caps:30},
-    {n:24,name:'Meshari Al-Jahani',pos:'DF',club:'Al-Hazem',age:24,goals:0,caps:8},
-    {n:25,name:'Turki Al-Ammar',pos:'MF',club:'Al-Ahli',age:25,goals:2,caps:12},
-    {n:26,name:'Ahmed Al-Ghamdi',pos:'FW',club:'Al-Qadsiah',age:23,goals:3,caps:8},
-  ]},
-  'Algeria':{coach:'Vladimir Petković',style:'4-3-3',confederation:'CAF',players:[
-    {n:1,name:'Raïs M\'Bolhi',pos:'GK',club:'Al-Qadsiah',age:36,caps:75,goals:0},
-    {n:12,name:'Alexandre Oukidja',pos:'GK',club:'Strasbourg',age:35,caps:28,goals:0},
-    {n:23,name:'Amine Rossi',pos:'GK',club:'Clermont',age:30,caps:5,goals:0},
-    {n:2,name:'Aissa Mandi',pos:'DF',club:'Villarreal',age:33,caps:72,goals:3},
-    {n:3,name:'Ramy Bensebaini',pos:'DF',club:'Borussia Dortmund',age:29,caps:48,goals:8},
-    {n:4,name:'Djamel Benlamri',pos:'DF',club:'Galatasaray',age:35,caps:52,goals:3},
-    {n:5,name:'Hicham Boudaoui',pos:'MF',club:'Nice',age:25,caps:32,goals:3},
-    {n:6,name:'Youcef Atal',pos:'DF',club:'Nice',age:28,caps:42,goals:7},
-    {n:13,name:'Amar Dedic',pos:'DF',club:'Benfica',age:23,goals:1,caps:6},
-    {n:15,name:'Saïd Benrahma',pos:'FW',club:'Lyon',age:29,caps:46,goals:12},
-    {n:7,name:'Riyad Mahrez',pos:'FW',club:'Al-Ahli',age:33,caps:82,goals:36,nick:'Captain'},
-    {n:8,name:'Sofiane Feghouli',pos:'MF',club:'Fatih Karagümrük',age:34,caps:75,goals:9},
-    {n:9,name:'Youcef Belaïli',pos:'FW',club:'Brest',age:32,caps:55,goals:15},
-    {n:10,name:'Andy Delort',pos:'FW',club:'Nice',age:33,caps:22,goals:6},
-    {n:11,name:'Islam Slimani',pos:'FW',club:'Brest',age:36,caps:98,goals:40,nick:'Slimani'},
-    {n:14,name:'Mehdi Zerkane',pos:'MF',club:'Strasbourg',age:26,caps:22,goals:4},
-    {n:16,name:'Adlène Guedioura',pos:'MF',club:'Nottm Forest',age:38,caps:66,goals:3},
-    {n:17,name:'Azzedine Ounahi',pos:'MF',club:'Girona',age:26,caps:10,goals:2},
-    {n:18,name:'Farès Chaïbi',pos:'MF',club:'Eintracht Frankfurt',age:23,caps:18,goals:5},
-    {n:19,name:'Adem Zorgane',pos:'MF',club:'Charleroi',age:24,caps:16,goals:2},
-    {n:20,name:'Baghdad Bounedjah',pos:'FW',club:'Al-Sadd',age:33,caps:44,goals:18},
-    {n:21,name:'Rayan Ait-Nouri',pos:'DF',club:'Wolves',age:24,caps:24,goals:3},
-    {n:22,name:'Mohamed Amine Amoura',pos:'FW',club:'Stuttgart',age:25,caps:20,goals:8},
-    {n:24,name:'Billal Brahimi',pos:'FW',club:'Lyon',age:32,caps:50,goals:14},
-    {n:25,name:'Zinedine Ferhat',pos:'MF',club:'Nîmes',age:30,caps:26,goals:4},
-    {n:26,name:'Mounir Chaftar',pos:'FW',club:'Séwé',age:22,caps:6,goals:2},
-  ]},
-  'Austria':{coach:'Ralf Rangnick',style:'4-2-3-1',confederation:'UEFA',players:[
-    {n:1,name:'Patrick Pentz',pos:'GK',club:'Bayer Leverkusen',age:28,caps:26,goals:0},
-    {n:12,name:'Alexander Schlager',pos:'GK',club:'RB Salzburg',age:30,caps:14,goals:0},
-    {n:23,name:'Tobias Lawal',pos:'GK',club:'Austria Wien',age:22,caps:3,goals:0},
-    {n:2,name:'Stefan Posch',pos:'DF',club:'Bologna',age:28,caps:38,goals:3},
-    {n:3,name:'Philipp Mwene',pos:'DF',club:'PSV',age:31,caps:28,goals:1},
-    {n:4,name:'Kevin Danso',pos:'DF',club:'Lens',age:26,caps:32,goals:2},
-    {n:5,name:'Maximilian Wöber',pos:'DF',club:'Leeds',age:27,caps:35,goals:1},
-    {n:13,name:'Gernot Trauner',pos:'DF',club:'Feyenoord',age:32,caps:55,goals:4},
-    {n:15,name:'Philip Lienhart',pos:'DF',club:'SC Freiburg',age:29,caps:28,goals:1},
-    {n:22,name:'Alexander Prass',pos:'DF',club:'RB Salzburg',age:24,caps:18,goals:1},
-    {n:6,name:'Florian Grillitsch',pos:'MF',club:'Ajax',age:29,caps:46,goals:3},
-    {n:7,name:'Marcel Sabitzer',pos:'MF',club:'Borussia Dortmund',age:31,caps:78,goals:12,nick:'Sabi'},
-    {n:8,name:'Nicolas Seiwald',pos:'MF',club:'RB Leipzig',age:24,caps:30,goals:2},
-    {n:9,name:'Michael Gregoritsch',pos:'FW',club:'SC Freiburg',age:30,caps:52,goals:14},
-    {n:10,name:'Christoph Baumgartner',pos:'MF',club:'RB Leipzig',age:25,caps:42,goals:11},
-    {n:11,name:'Patrick Wimmer',pos:'FW',club:'VfL Wolfsburg',age:24,caps:28,goals:6},
-    {n:14,name:'Konrad Laimer',pos:'MF',club:'Bayern Munich',age:27,caps:36,goals:3},
-    {n:16,name:'Romano Schmid',pos:'MF',club:'Werder Bremen',age:25,caps:20,goals:3},
-    {n:17,name:'Marko Arnautović',pos:'FW',club:'Inter Milan',age:36,caps:108,goals:36,nick:'Arnie · Captain'},
-    {n:18,name:'Karim Onisiwo',pos:'FW',club:'Mainz',age:32,caps:28,goals:6},
-    {n:19,name:'Valentino Lazaro',pos:'FW',club:'Torino',age:28,caps:42,goals:5},
-    {n:20,name:'Florian Kainz',pos:'FW',club:'FC Köln',age:31,caps:35,goals:5},
-    {n:21,name:'Nikolas Sattlberger',pos:'MF',club:'Rapid Wien',age:21,caps:8,goals:0},
-    {n:24,name:'Matthias Seidl',pos:'FW',club:'RB Salzburg',age:22,caps:6,goals:1},
-    {n:25,name:'Thomas Goiginger',pos:'FW',club:'LASK',age:30,caps:12,goals:2},
-    {n:26,name:'Leopold Querfeld',pos:'DF',club:'Austria Wien',age:21,caps:5,goals:0},
-  ]},
-  'Jordan':{coach:'Hossam Hassan',style:'4-4-2',confederation:'AFC',players:[
-    {n:1,name:'Yazeed Abo Laila',pos:'GK',club:'Al-Wehdat',age:32,caps:44,goals:0},
-    {n:12,name:'Ahmad Salam',pos:'GK',club:'Al-Faisaly',age:28,goals:0,caps:12},
-    {n:23,name:'Mohamad Abu Zaid',pos:'GK',club:'Al-Wehdat',age:26,goals:0,caps:5},
-    {n:2,name:'Ahmad Smadi',pos:'DF',club:'Al-Faisaly',age:29,caps:38,goals:1},
-    {n:3,name:'Baha Faisal',pos:'DF',club:'Al-Wehdat',age:28,caps:32,goals:0},
-    {n:4,name:'Yazan Al-Naimat',pos:'DF',club:'Al-Wehdat',age:26,caps:28,goals:2},
-    {n:5,name:'Ehab Ismaeel',pos:'DF',club:'Shabab Al-Ahli',age:30,caps:40,goals:1},
-    {n:6,name:'Mahmoud Alloush',pos:'DF',club:'Al-Wehdat',age:27,caps:24,goals:0},
-    {n:13,name:'Mohammad Haddad',pos:'DF',club:'Al-Jazeera',age:26,caps:18,goals:1},
-    {n:15,name:'Ramzi Saleh',pos:'DF',club:'Al-Faisaly',age:28,caps:22,goals:0},
-    {n:7,name:'Mujtaba Adnan',pos:'MF',club:'Al-Faisaly',age:28,caps:46,goals:8},
-    {n:8,name:'Musa Al-Tamari',pos:'MF',club:'Montpellier',age:27,caps:52,goals:10},
-    {n:9,name:'Yousef Al-Rawabdeh',pos:'FW',club:'Al-Wehdat',age:28,caps:38,goals:12},
-    {n:10,name:'Ahmad Hayel',pos:'FW',club:'Al-Faisaly',age:30,caps:56,goals:18,nick:'Captain'},
-    {n:11,name:'Osama Rashid',pos:'FW',club:'Wigan Athletic',age:26,caps:36,goals:14},
-    {n:14,name:'Shadi Abu Hashish',pos:'MF',club:'Al-Jazeera',age:28,caps:32,goals:4},
-    {n:16,name:'Eslam Ahmad',pos:'MF',club:'Al-Wahdat',age:26,caps:22,goals:3},
-    {n:17,name:'Abdullah Nasib',pos:'FW',club:'Al-Ahly',age:24,caps:18,goals:6},
-    {n:18,name:'Ismail Ayed',pos:'MF',club:'Konyaspor',age:27,caps:28,goals:5},
-    {n:19,name:'Ahmad Ababneh',pos:'DF',club:'Al-Faisaly',age:25,caps:14,goals:0},
-    {n:20,name:'Oday Dabbagh',pos:'FW',club:'Anderlecht',age:26,caps:20,goals:7},
-    {n:21,name:'Ahmad Al-Ali',pos:'MF',club:'Al-Ramtha',age:24,caps:10,goals:2},
-    {n:22,name:'Hesham Abuali',pos:'FW',club:'Al-Faisaly',age:25,caps:8,goals:3},
-    {n:24,name:'Mohammad Saleh',pos:'MF',club:'Al-Wehdat',age:23,caps:6,goals:1},
-    {n:25,name:'Khalid Jadaan',pos:'DF',club:'Al-Jazeera',age:26,caps:5,goals:0},
-    {n:26,name:'Ali Hamad',pos:'FW',club:'Al-Wahdat',age:22,caps:4,goals:1},
-  ]},
-  'Norway':{coach:'Ståle Solbakken',style:'4-3-3',confederation:'UEFA',players:[
-    {n:1,name:'Ørjan Nyland',pos:'GK',club:'Ipswich Town',age:34,caps:44,goals:0},
-    {n:12,name:'Mats Møller Dæhli',pos:'GK',club:'Brann',age:30,goals:0,caps:2},
-    {n:23,name:'Jacob Karlstrøm',pos:'GK',club:'Lillestrøm',age:30,goals:0,caps:8},
-    {n:2,name:'Kristoffer Ajer',pos:'DF',club:'Brentford',age:27,caps:58,goals:4},
-    {n:3,name:'Birger Meling',pos:'DF',club:'Rennes',age:30,caps:36,goals:3},
-    {n:4,name:'Andreas Hanche-Olsen',pos:'DF',club:'Gent',age:28,caps:22,goals:1},
-    {n:5,name:'Leo Østigård',pos:'DF',club:'Napoli',age:25,caps:28,goals:2},
-    {n:13,name:'Stian Gregersen',pos:'DF',club:'Wolverhampton',age:30,caps:14,goals:1},
-    {n:15,name:'Marcus Holmgren Pedersen',pos:'DF',club:'SC Freiburg',age:25,caps:18,goals:2},
-    {n:22,name:'Elias Solberg',pos:'DF',club:'Young Boys',age:24,caps:8,goals:0},
-    {n:6,name:'Mathias Normann',pos:'MF',club:'Standard Liège',age:29,caps:26,goals:1},
-    {n:7,name:'Mohamed Elyounoussi',pos:'FW',club:'Celtic',age:30,caps:68,goals:20},
-    {n:8,name:'Sander Berge',pos:'MF',club:'Burnley',age:27,caps:48,goals:5},
-    {n:10,name:'Martin Ødegaard',pos:'MF',club:'Arsenal',age:26,caps:72,goals:24,nick:'Captain'},
-    {n:11,name:'Alexander Sørloth',pos:'FW',club:'Atlético Madrid',age:29,caps:56,goals:24},
-    {n:14,name:'Morten Thorsby',pos:'MF',club:'Genoa',age:29,caps:38,goals:3},
-    {n:16,name:'Fredrik Aursnes',pos:'MF',club:'Benfica',age:28,caps:38,goals:3},
-    {n:17,name:'Ola Aina',pos:'DF',club:'Nottm Forest',age:28,goals:3,caps:10},
-    {n:18,name:'Patrick Berg',pos:'MF',club:'Lens',age:27,caps:28,goals:2},
-    {n:19,name:'Kristian Thorvaldsen',pos:'MF',club:'Brann',age:25,caps:8,goals:1},
-    {n:9,name:'Erling Haaland',pos:'FW',club:'Man City',age:25,caps:36,goals:34,nick:'Haaland'},
-    {n:20,name:'Jørgen Strand Larsen',pos:'FW',club:'Celta Vigo',age:25,caps:22,goals:8},
-    {n:21,name:'Tobias Børkeeiet',pos:'MF',club:'Tromsø',age:26,caps:10,goals:1},
-    {n:24,name:'Lasse Nordås',pos:'GK',club:'Brighton',age:27,caps:5,goals:0},
-    {n:25,name:'Gustav Isaksen',pos:'FW',club:'Lazio',age:23,caps:12,goals:4},
-    {n:26,name:'Daniel Berg Hestad',pos:'MF',club:'Molde',age:22,caps:4,goals:0},
-  ]},
-  'Sweden':{coach:'Jon Dahl Tomasson',style:'4-3-3',confederation:'UEFA',players:[
-    {n:1,name:'Robin Olsen',pos:'GK',club:'Aston Villa',age:35,caps:60,goals:0},
-    {n:12,name:'Kristoffer Nordfeldt',pos:'GK',club:'Göztepe',age:35,caps:18,goals:0},
-    {n:23,name:'Karl-Johan Johnsson',pos:'GK',club:'Guingamp',age:34,caps:20,goals:0},
-    {n:2,name:'Emil Krafth',pos:'DF',club:'Newcastle',age:30,caps:32,goals:1},
-    {n:3,name:'Ludwig Augustinsson',pos:'DF',club:'Sevilla',age:31,caps:48,goals:4},
-    {n:4,name:'Pontus Jansson',pos:'DF',club:'Brentford',age:34,caps:52,goals:3,nick:'Captain'},
-    {n:5,name:'Marcus Danielson',pos:'DF',club:'AIK',age:34,caps:30,goals:4},
-    {n:13,name:'Victor Nilsson Lindelöf',pos:'DF',club:'Man Utd',age:30,caps:68,goals:3},
-    {n:14,name:'Filip Helander',pos:'DF',club:'Bologna',age:32,caps:38,goals:2},
-    {n:22,name:'Joakim Nilsson',pos:'DF',club:'Udinese',age:30,caps:24,goals:1},
-    {n:6,name:'Albin Ekdal',pos:'MF',club:'Sampdoria',age:35,caps:74,goals:4},
-    {n:7,name:'Sebastian Larsson',pos:'MF',club:'AIK',age:39,caps:132,goals:6},
-    {n:8,name:'Mattias Svanberg',pos:'MF',club:'Wolfsburg',age:27,caps:38,goals:5},
-    {n:10,name:'Emil Forsberg',pos:'MF',club:'RB Leipzig',age:33,caps:76,goals:20,nick:'Forsberg'},
-    {n:11,name:'Alexander Isak',pos:'FW',club:'Newcastle',age:25,caps:40,goals:18,nick:'Isak'},
-    {n:15,name:'Viktor Claesson',pos:'MF',club:'Krasnodar',age:32,caps:60,goals:10},
-    {n:16,name:'Dejan Kulusevski',pos:'FW',club:'Tottenham',age:25,caps:48,goals:16,nick:'Deki'},
-    {n:17,name:'Jesper Karlsson',pos:'FW',club:'Bologna',age:27,caps:22,goals:6},
-    {n:18,name:'Robin Quaison',pos:'FW',club:'Palermo',age:31,caps:34,goals:6},
-    {n:19,name:'Isaac Kiese Thelin',pos:'FW',club:'SC Freiburg',age:31,caps:22,goals:5},
-    {n:9,name:'Zlatan Ibrahimović',pos:'FW',club:'Retired',age:44,caps:120,goals:62,nick:'Zlatko'},
-    {n:20,name:'Kristoffer Eriksson',pos:'MF',club:'Como',age:27,caps:10,goals:2},
-    {n:21,name:'Sam Larsson',pos:'FW',club:'Kasımpaşa',age:31,caps:24,goals:6},
-    {n:24,name:'Anthony Elanga',pos:'FW',club:'Nottm Forest',age:23,caps:18,goals:4},
-    {n:25,name:'Patrik Walemark',pos:'FW',club:'Club Brugge',age:24,caps:10,goals:3},
-    {n:26,name:'Carl Starfelt',pos:'DF',club:'Celtic',age:29,caps:30,goals:2},
-  ]},
-  'Tunisia':{coach:'Jalel Kadri',style:'4-3-3',confederation:'CAF',players:[
-    {n:1,name:'Aymen Dahmen',pos:'GK',club:'Montpellier',age:28,caps:28,goals:0},
-    {n:12,name:'Bechir Ben Said',pos:'GK',club:'Stade Tunisien',age:30,goals:0,caps:8},
-    {n:23,name:'Mouez Hassen',pos:'GK',club:'Caen',age:29,goals:0,caps:14},
-    {n:2,name:'Montassar Talbi',pos:'DF',club:'Lorient',age:25,caps:28,goals:2},
-    {n:3,name:'Mohamed Dräger',pos:'DF',club:'FC Basel',age:28,caps:42,goals:2},
-    {n:4,name:'Nader Ghandri',pos:'DF',club:'Al Ahly',age:30,caps:30,goals:2},
-    {n:5,name:'Dylan Bronn',pos:'DF',club:'Salernitana',age:29,caps:32,goals:3},
-    {n:6,name:'Ali Maaloul',pos:'DF',club:'Al Ahly',age:33,caps:82,goals:10,nick:'Captain'},
-    {n:13,name:'Wajdi Kechrida',pos:'DF',club:'Galatasaray',age:28,caps:36,goals:3},
-    {n:15,name:'Hamza Mathlouthi',pos:'DF',club:'Zamalek',age:28,caps:18,goals:0},
-    {n:7,name:'Naïm Sliti',pos:'MF',club:'Dijon',age:31,caps:58,goals:12},
-    {n:8,name:'Aïssa Laïdouni',pos:'MF',club:'Ferencváros',age:27,caps:30,goals:4},
-    {n:10,name:'Wahbi Khazri',pos:'MF',club:'Montpellier',age:33,caps:82,goals:24},
-    {n:11,name:'Youssef Msakni',pos:'FW',club:'Al-Arabi',age:33,caps:102,goals:34},
-    {n:14,name:'Ferjani Sassi',pos:'MF',club:'Al Ahly',age:32,caps:78,goals:12},
-    {n:16,name:'Ellyes Skhiri',pos:'MF',club:'Eintracht Frankfurt',age:29,caps:50,goals:8},
-    {n:17,name:'Mohamed Ben Romdhane',pos:'MF',club:'Nantes',age:25,caps:22,goals:4},
-    {n:18,name:'Hannibal Mejbri',pos:'MF',club:'Burnley',age:22,caps:28,goals:5,nick:'Hannibal'},
-    {n:9,name:'Seifeddine Jaziri',pos:'FW',club:'Hatayspor',age:30,caps:40,goals:14},
-    {n:19,name:'Issam Jebali',pos:'FW',club:'Troyes',age:30,caps:35,goals:10},
-    {n:20,name:'Mohamed Drager',pos:'DF',club:'Aris',age:27,caps:12,goals:0},
-    {n:21,name:'Taha Yassine Khenissi',pos:'FW',club:'Club Africain',age:33,caps:58,goals:18},
-    {n:22,name:'Saif-Eddine Khaoui',pos:'MF',club:'Troyes',age:30,caps:28,goals:5},
-    {n:24,name:'Bassem Srarfi',pos:'FW',club:'Nice',age:28,caps:22,goals:6},
-    {n:25,name:'Mortadha Ben Ouanes',pos:'FW',club:'Arouca',age:26,caps:10,goals:2},
-    {n:26,name:'Moez Ben Cherifia',pos:'MF',club:'Espérance',age:24,caps:5,goals:1},
-  ]},
-  'Egypt':{coach:'Hossam El-Badry',style:'4-2-3-1',confederation:'CAF',players:[
-    {n:1,name:'Mohamed El-Shenawy',pos:'GK',club:'Al-Ahly',age:35,caps:55,goals:0},
-    {n:12,name:'Ahmed El-Shenawy',pos:'GK',club:'Zamalek',age:30,goals:0,caps:12},
-    {n:23,name:'Mostafa Shobeir',pos:'GK',club:'Al-Ahly',age:26,goals:0,caps:5},
-    {n:2,name:'Ahmed Fatouh',pos:'DF',club:'Zamalek',age:28,caps:32,goals:0},
-    {n:3,name:'Baher El-Mohamady',pos:'DF',club:'Al-Ahly',age:34,caps:66,goals:2},
-    {n:4,name:'Ahmed Hegazy',pos:'DF',club:'Al-Ittihad',age:33,caps:90,goals:6},
-    {n:5,name:'Omar Kamal',pos:'DF',club:'Pyramids FC',age:27,caps:28,goals:1},
-    {n:6,name:'Ayman Ashraf',pos:'DF',club:'Al-Ahly',age:26,caps:20,goals:0},
-    {n:13,name:'Mohamed Abdel-Moneim',pos:'DF',club:'Al-Zamalek',age:30,caps:36,goals:2},
-    {n:15,name:'Mahmoud Hamdi',pos:'DF',club:'Al-Ahly',age:27,caps:16,goals:0},
-    {n:7,name:'Trezeguet',pos:'FW',club:'Trabzonspor',age:31,caps:68,goals:14},
-    {n:8,name:'Tarek Hamed',pos:'MF',club:'Zamalek',age:33,caps:52,goals:3},
-    {n:9,name:'Mostafa Mohamed',pos:'FW',club:'Galatasaray',age:27,caps:40,goals:18},
-    {n:10,name:'Mohamed Salah',pos:'FW',club:'Liverpool',age:33,caps:100,goals:60,nick:'Mo · Captain'},
-    {n:11,name:'Mohamed Elneny',pos:'MF',club:'Arsenal',age:32,caps:90,goals:4},
-    {n:14,name:'Omar Marmoush',pos:'FW',club:'Man City',age:26,caps:30,goals:14,nick:'Marmoush'},
-    {n:16,name:'Emam Ashour',pos:'MF',club:'Al-Ahly',age:26,caps:22,goals:3},
-    {n:17,name:'Akram Tawfik',pos:'MF',club:'Al-Ahly',age:26,caps:18,goals:2},
-    {n:18,name:'Mahmoud Trezeguet Hassan',pos:'MF',club:'Trabzonspor',age:26,caps:10,goals:2},
-    {n:19,name:'Zizo',pos:'FW',club:'Zamalek',age:32,caps:44,goals:10},
-    {n:20,name:'Hamdi Fathi',pos:'MF',club:'Al-Ahly',age:27,caps:16,goals:1},
-    {n:21,name:'Ibrahim Adel',pos:'FW',club:'Brentford',age:23,caps:12,goals:3},
-    {n:22,name:'Ahmed Sayed',pos:'FW',club:'Pyramids',age:28,caps:14,goals:4},
-    {n:24,name:'Karim Fouad',pos:'MF',club:'Ceramica',age:24,caps:6,goals:1},
-    {n:25,name:'Mahmoud Abdelaziz',pos:'DF',club:'Al-Ahly',age:24,caps:5,goals:0},
-    {n:26,name:'Ibrahim Hassan',pos:'FW',club:'FC Basel',age:23,caps:4,goals:1},
-  ]},
-  'Iran':{coach:'Amir Ghalenoei',style:'4-2-3-1',confederation:'AFC',players:[
-    {n:1,name:'Alireza Beiranvand',pos:'GK',club:'Persepolis',age:32,caps:62,goals:0},
-    {n:12,name:'Payam Niazmand',pos:'GK',club:'Esteghlal',age:34,goals:0,caps:20},
-    {n:23,name:'Ali Shamsaei',pos:'GK',club:'Sepahan',age:28,goals:0,caps:8},
-    {n:2,name:'Milad Mohammadi',pos:'DF',club:'Akhmat Grozny',age:30,caps:46,goals:1},
-    {n:3,name:'Hossein Kanaanizadegan',pos:'DF',club:'Esteghlal',age:32,caps:58,goals:2},
-    {n:4,name:'Morteza Pouraliganji',pos:'DF',club:'Al-Sailiya',age:32,caps:66,goals:4},
-    {n:5,name:'Majid Hosseini',pos:'DF',club:'Kasımpaşa',age:26,caps:28,goals:2},
-    {n:6,name:'Shojae Khalilzadeh',pos:'DF',club:'Al-Ahli Doha',age:32,caps:44,goals:3},
-    {n:13,name:'Mohammad Mohebi',pos:'DF',club:'Damash Gilan',age:27,caps:18,goals:0},
-    {n:15,name:'Sadegh Moharrami',pos:'DF',club:'Dinamo Zagreb',age:28,caps:30,goals:1},
-    {n:7,name:'Alireza Jahanbakhsh',pos:'FW',club:'Feyenoord',age:31,caps:88,goals:18,nick:'Captain'},
-    {n:8,name:'Saeid Ezatolahi',pos:'MF',club:'Getafe',age:28,caps:50,goals:6},
-    {n:9,name:'Sardar Azmoun',pos:'FW',club:'Bayer Leverkusen',age:30,caps:78,goals:48,nick:'Azmoun'},
-    {n:10,name:'Ali Gholizadeh',pos:'FW',club:'Charleroi',age:27,caps:36,goals:10},
-    {n:11,name:'Mehdi Taremi',pos:'FW',club:'Inter Milan',age:32,caps:85,goals:48,nick:'Taremi'},
-    {n:14,name:'Ehsan Hajsafi',pos:'MF',club:'AEK Athens',age:34,caps:112,goals:3},
-    {n:16,name:'Ahmad Noorollahi',pos:'MF',club:'Buriram United',age:30,caps:42,goals:6},
-    {n:17,name:'Omid Noorafkan',pos:'MF',club:'Esteghlal',age:26,caps:18,goals:3},
-    {n:18,name:'Shahriyar Moghanloo',pos:'DF',club:'Persepolis',age:27,caps:12,goals:0},
-    {n:19,name:'Kaveh Rezaei',pos:'FW',club:'Al-Jazira',age:31,caps:42,goals:11},
-    {n:20,name:'Mehdi Ghayedi',pos:'FW',club:'PAOK',age:25,caps:20,goals:5},
-    {n:21,name:'Saman Ghoddos',pos:'MF',club:'Brentford',age:30,caps:38,goals:7},
-    {n:22,name:'Ramin Rezaeian',pos:'DF',club:'Nottm Forest',age:32,caps:46,goals:3},
-    {n:24,name:'Allahyar Sayyadmanesh',pos:'FW',club:'Hull City',age:24,caps:22,goals:5},
-    {n:25,name:'Shayan Mosleh',pos:'MF',club:'Esteghlal',age:24,caps:8,goals:1},
-    {n:26,name:'Karim Ansarifard',pos:'FW',club:'Persepolis',age:34,caps:58,goals:24},
-  ]},
-  'New Zealand':{coach:'Darren Bazeley',style:'4-3-3',confederation:'OFC',players:[
-    {n:1,name:'Oliver Sail',pos:'GK',club:'FC Nordsjaelland',age:30,caps:32,goals:0},
-    {n:12,name:'Stefan Marinovic',pos:'GK',club:'Vancouver Whitecaps',age:34,goals:0,caps:18},
-    {n:23,name:'Max Crocombe',pos:'GK',club:'Plymouth',age:30,goals:0,caps:10},
-    {n:2,name:'Liberato Cacace',pos:'DF',club:'Empoli',age:24,caps:28,goals:2},
-    {n:3,name:'Callan Elliot',pos:'DF',club:'Wellington Phoenix',age:23,caps:14,goals:0},
-    {n:4,name:'Winston Reid',pos:'DF',club:'Brentford',age:36,caps:48,goals:2,nick:'Captain'},
-    {n:5,name:'Michael Boxall',pos:'DF',club:'Minnesota United',age:36,caps:40,goals:2},
-    {n:6,name:'Tommy Smith',pos:'DF',club:'Stoke City',age:34,caps:52,goals:4},
-    {n:13,name:'Nando de Wijs',pos:'DF',club:'Hull City',age:27,caps:18,goals:0},
-    {n:15,name:'Finn Surman',pos:'DF',club:'Bournemouth',age:38,caps:32,goals:3},
-    {n:7,name:'Kosta Barbarouses',pos:'FW',club:'Wellington Phoenix',age:34,caps:42,goals:10},
-    {n:8,name:'Marco Rojas',pos:'FW',club:'Melbourne Victory',age:33,caps:46,goals:12},
-    {n:9,name:'Chris Wood',pos:'FW',club:'Nottm Forest',age:33,caps:62,goals:32,nick:'Woody · Captain'},
-    {n:10,name:'Marko Stamenic',pos:'MF',club:'Adelaide United',age:23,caps:22,goals:4},
-    {n:11,name:'Sarpreet Singh',pos:'MF',club:'Jahn Regensburg',age:26,caps:28,goals:6},
-    {n:14,name:'Joe Bell',pos:'MF',club:'DC United',age:25,caps:18,goals:3},
-    {n:16,name:'Moses Dyer',pos:'FW',club:'Brann',age:26,caps:24,goals:8},
-    {n:17,name:'Elijah Just',pos:'FW',club:'San Jose Earthquakes',age:24,caps:12,goals:3},
-    {n:18,name:'Deklan Wynne',pos:'DF',club:'Colorado Rapids',age:29,caps:22,goals:1},
-    {n:19,name:'Bozhidar Kraev',pos:'FW',club:'CSKA Sofia',age:27,caps:10,goals:4},
-    {n:20,name:'Dane Ingham',pos:'DF',club:'Brisbane Roar',age:28,caps:14,goals:0},
-    {n:21,name:'Marcus Fyfe',pos:'MF',club:'Kilmarnock',age:26,caps:10,goals:2},
-    {n:22,name:'Ryan Thomas',pos:'MF',club:'Groningen',age:30,caps:32,goals:5},
-    {n:24,name:'Hamish Watson',pos:'MF',club:'Wellington Phoenix',age:24,caps:8,goals:1},
-    {n:25,name:'Matt Garbett',pos:'MF',club:'FC Nordsjaelland',age:26,caps:6,goals:1},
-    {n:26,name:'Callum McCowatt',pos:'FW',club:'AGF',age:25,caps:12,goals:4},
-  ]},
-  'Iraq':{coach:'Jesús Casas',style:'4-3-3',confederation:'AFC',players:[
-    {n:1,name:'Jalal Hassan',pos:'GK',club:'Al-Zawraa',age:34,caps:48,goals:0},
-    {n:12,name:'Dhurgham Ismail',pos:'GK',club:'Erbil SC',age:28,goals:0,caps:10},
-    {n:23,name:'Mortada Mahdi',pos:'GK',club:'Al-Quwa Al-Jawiya',age:26,goals:0,caps:5},
-    {n:2,name:'Ali Adnan',pos:'DF',club:'Colorado Rapids',age:30,caps:72,goals:4,nick:'Captain'},
-    {n:3,name:'Mohamed Ali',pos:'DF',club:'Al-Zawraa',age:28,caps:38,goals:1},
-    {n:4,name:'Saad Natiq',pos:'DF',club:'Al-Shorta',age:29,caps:42,goals:2},
-    {n:5,name:'Rebin Sulaka',pos:'DF',club:'Al-Minaa',age:27,caps:26,goals:1},
-    {n:6,name:'Amjed Kalaf',pos:'DF',club:'Erbil SC',age:30,caps:36,goals:2},
-    {n:13,name:'Zaid Tahsin',pos:'DF',club:'Al-Zawraa',age:26,caps:18,goals:0},
-    {n:15,name:'Fahad Mohsen',pos:'DF',club:'Al-Quwa Al-Jawiya',age:27,caps:22,goals:1},
-    {n:7,name:'Yousif Abtan',pos:'MF',club:'Al-Duhail',age:28,caps:52,goals:8},
-    {n:8,name:'Hussein Kadhim',pos:'MF',club:'Al-Zawraa',age:27,caps:44,goals:5},
-    {n:9,name:'Humam Tariq',pos:'FW',club:'Wisla Płock',age:26,caps:38,goals:12},
-    {n:10,name:'Emad Mohamed',pos:'FW',club:'Al-Shorta',age:30,caps:60,goals:20},
-    {n:11,name:'Ahmed Yasin',pos:'FW',club:'Al-Shorta',age:33,caps:78,goals:28},
-    {n:14,name:'Safaa Hadi',pos:'MF',club:'Erbil SC',age:27,caps:30,goals:4},
-    {n:16,name:'Mehdi Kamil',pos:'MF',club:'Al-Quwa Al-Jawiya',age:26,caps:22,goals:3},
-    {n:17,name:'Ali Faez',pos:'FW',club:'Al-Shorta',age:25,caps:18,goals:5},
-    {n:18,name:'Mohanad Ali',pos:'FW',club:'Al-Zawraa',age:26,caps:20,goals:6},
-    {n:19,name:'Alaa Abbas',pos:'MF',club:'Al-Quwa Al-Jawiya',age:24,caps:12,goals:2},
-    {n:20,name:'Thaer Krouma',pos:'DF',club:'Al-Zawraa',age:29,caps:28,goals:1},
-    {n:21,name:'Zaid Tahir',pos:'FW',club:'Erbil SC',age:25,caps:10,goals:3},
-    {n:22,name:'Hassan Abdulmajeed',pos:'MF',club:'Al-Shorta',age:24,caps:8,goals:1},
-    {n:24,name:'Osama Rashid',pos:'MF',club:'Irak Telekom',age:24,caps:6,goals:1},
-    {n:25,name:'Ahmad Khaled',pos:'FW',club:'Al-Quwa Al-Jawiya',age:22,caps:4,goals:1},
-    {n:26,name:'Mustafa Tahseen',pos:'DF',club:'Al-Minaa',age:23,caps:3,goals:0},
-  ]},
-  'Panama':{coach:'Thomas Christiansen',style:'4-4-2',confederation:'CONCACAF',players:[
-    {n:1,name:'Luis Mejía',pos:'GK',club:'Independiente',age:30,caps:40,goals:0},
-    {n:12,name:'Orlando Mosquera',pos:'GK',club:'Guaraní',age:32,goals:0,caps:12},
-    {n:23,name:'Jaime Penedo',pos:'GK',club:'Árabe Unido',age:41,goals:0,caps:80},
-    {n:2,name:'Michael Murillo',pos:'DF',club:'Anderlecht',age:29,caps:52,goals:2},
-    {n:3,name:'Andrés Andrade',pos:'DF',club:'Nashville SC',age:27,caps:38,goals:2},
-    {n:4,name:'Harold Cummings',pos:'DF',club:'Sporting CP',age:30,caps:48,goals:3,nick:'Captain'},
-    {n:5,name:'Eric Davis',pos:'DF',club:'Nashville SC',age:33,caps:72,goals:5},
-    {n:6,name:'César Blackman',pos:'DF',club:'Olimpia',age:28,caps:32,goals:1},
-    {n:13,name:'Fidel Escobar',pos:'DF',club:'Club de Foot Montréal',age:30,caps:36,goals:2},
-    {n:15,name:'Roderick Miller',pos:'DF',club:'Árabe Unido',age:27,caps:20,goals:0},
-    {n:7,name:'Adalberto Carrasquilla',pos:'MF',club:'Real Sociedad',age:27,caps:48,goals:8},
-    {n:8,name:'Anibal Godoy',pos:'MF',club:'Nashville SC',age:36,caps:82,goals:4},
-    {n:9,name:'Rolando Blackburn',pos:'FW',club:'San Jose Earthquakes',age:32,caps:44,goals:12},
-    {n:10,name:'Aníbal Godoy',pos:'MF',club:'Nashville SC',age:36,goals:4,caps:82},
-    {n:11,name:'Alberto Quintero',pos:'FW',club:'Alianza Lima',age:34,caps:60,goals:14},
-    {n:14,name:'Édgar Bárcenas',pos:'MF',club:'Necaxa',age:29,caps:42,goals:6},
-    {n:16,name:'Azmahar Ariano',pos:'MF',club:'Árabe Unido',age:27,caps:28,goals:4},
-    {n:17,name:'José Fajardo',pos:'FW',club:'Colorado Rapids',age:28,caps:38,goals:10},
-    {n:18,name:'Gabriel Torres',pos:'FW',club:'Huracán',age:34,caps:74,goals:32},
-    {n:19,name:'Freddy Góndola',pos:'FW',club:'Waterford',age:27,caps:22,goals:6},
-    {n:20,name:'César Yanis',pos:'MF',club:'Árabe Unido',age:30,caps:34,goals:5},
-    {n:21,name:'Rubén Grajales',pos:'DF',club:'Colorado Rapids',age:26,caps:18,goals:0},
-    {n:22,name:'Abdiel Arroyo',pos:'FW',club:'Columbus Crew',age:27,caps:28,goals:7},
-    {n:24,name:'Ricardo Ávila',pos:'FW',club:'Árabe Unido',age:25,caps:8,goals:2},
-    {n:25,name:'Edgardo Fariña',pos:'MF',club:'Comunicaciones',age:29,caps:12,goals:2},
-    {n:26,name:'Freddy Góndola',pos:'FW',club:'Waterford FC',age:27,goals:6,caps:22},
-  ]},
-  'Ghana':{coach:'Otto Addo',style:'4-2-3-1',confederation:'CAF',players:[
-    {n:1,name:'Richard Ofori',pos:'GK',club:'Maritzburg United',age:31,caps:38,goals:0},
-    {n:12,name:'Lawrence Ati-Zigi',pos:'GK',club:'FC St. Gallen',age:28,goals:0,caps:15},
-    {n:23,name:'Danlad Ibrahim',pos:'GK',club:'Asante Kotoko',age:23,goals:0,caps:5},
-    {n:2,name:'Andrew Ayew',pos:'FW',club:'Le Havre',age:35,caps:102,goals:23,nick:'Andrew'},
-    {n:3,name:'Denis Odoi',pos:'DF',club:'Club Brugge',age:36,caps:18,goals:0},
-    {n:4,name:'Daniel Amartey',pos:'DF',club:'Leicester',age:30,caps:52,goals:3},
-    {n:5,name:'Alexander Djiku',pos:'DF',club:'Fenerbahçe',age:30,caps:40,goals:2},
-    {n:6,name:'Gideon Mensah',pos:'DF',club:'Red Bull Salzburg',age:26,caps:22,goals:0},
-    {n:13,name:'Inaki Williams',pos:'FW',club:'Athletic Bilbao',age:30,caps:20,goals:5},
-    {n:15,name:'Alidu Seidu',pos:'DF',club:'Clermont',age:24,caps:18,goals:0},
-    {n:7,name:'Jordan Ayew',pos:'FW',club:'Crystal Palace',age:33,caps:100,goals:24,nick:'Jordan · Captain'},
-    {n:8,name:'Thomas Partey',pos:'MF',club:'Arsenal',age:31,caps:62,goals:12,nick:'Partey'},
-    {n:9,name:'Benjamin Tetteh',pos:'FW',club:'Yeni Malatyaspor',age:28,caps:22,goals:6},
-    {n:10,name:'Christian Atsu',pos:'FW',club:'Al-Raed',age:32,caps:68,goals:10},
-    {n:11,name:'Tariq Lamptey',pos:'DF',club:'Brighton',age:24,caps:20,goals:2},
-    {n:14,name:'Mubarak Wakaso',pos:'MF',club:'Jiangsu Suning',age:34,caps:80,goals:10},
-    {n:16,name:'Kudus Mohammed',pos:'MF',club:'Ajax',age:24,caps:28,goals:8,nick:'Kudus'},
-    {n:17,name:'Felix Afena-Gyan',pos:'FW',club:'Spezia',age:23,caps:14,goals:2},
-    {n:18,name:'Daniel-Kofi Kyereh',pos:'MF',club:'SC Freiburg',age:29,caps:22,goals:4},
-    {n:19,name:'Osman Bukari',pos:'FW',club:'Red Star Belgrade',age:26,caps:18,goals:5},
-    {n:20,name:'Salis Abdul Samed',pos:'MF',club:'Lens',age:24,caps:12,goals:1},
-    {n:21,name:'Fatawu Issahaku',pos:'FW',club:'Sporting CP',age:22,caps:18,goals:5,nick:'Fatawu'},
-    {n:22,name:'Antoine Semenyo',pos:'FW',club:'Bournemouth',age:25,caps:14,goals:4},
-    {n:24,name:'Jonathan Mensah',pos:'DF',club:'Columbus Crew',age:33,caps:58,goals:2},
-    {n:25,name:'Jonah Osabutey',pos:'FW',club:'Standard Liège',age:22,caps:5,goals:1},
-    {n:26,name:'Kamal Sowah',pos:'MF',club:'Club Brugge',age:25,caps:8,goals:2},
-  ]},
-  'DR Congo':{coach:'Sébastien Desabre',style:'4-3-3',confederation:'CAF',players:[
-    {n:1,name:'Joël Kiassumbua',pos:'GK',club:'OH Leuven',age:34,caps:42,goals:0},
-    {n:12,name:'Lionel Mpasi',pos:'GK',club:'TP Mazembe',age:28,goals:0,caps:8},
-    {n:23,name:'Dimitri Bertaud',pos:'GK',club:'Montpellier',age:28,goals:0,caps:5},
-    {n:2,name:'Ngonda Muzinga',pos:'DF',club:'Maccabi Haifa',age:29,caps:28,goals:0},
-    {n:3,name:'Yannick Bangala',pos:'DF',club:'Standard Liège',age:26,caps:18,goals:0},
-    {n:4,name:'Marcel Tisserand',pos:'DF',club:'Fenerbahçe',age:31,caps:52,goals:2},
-    {n:5,name:'Chancel Mbemba',pos:'DF',club:'Marseille',age:30,caps:58,goals:4,nick:'Captain'},
-    {n:6,name:'Arthur Masuaku',pos:'DF',club:'Brentford',age:30,caps:34,goals:3},
-    {n:13,name:'Eden Massouema',pos:'DF',club:'Caen',age:25,caps:10,goals:0},
-    {n:15,name:'Dzon Delarge',pos:'DF',club:'RC Lens',age:22,caps:6,goals:0},
-    {n:7,name:'Cédric Bakambu',pos:'FW',club:'Marseille',age:33,caps:72,goals:30,nick:'Bakambu'},
-    {n:8,name:'Yannick Ferreira Carrasco',pos:'FW',club:'Al-Shabab',age:31,caps:42,goals:12,nick:'Carrasco'},
-    {n:9,name:'Britt Assombalonga',pos:'FW',club:'Adana Demirspor',age:32,caps:38,goals:14},
-    {n:10,name:'Yannick Bolasie',pos:'FW',club:'Middlesbrough',age:34,caps:52,goals:9},
-    {n:11,name:'Rezky Pipi',pos:'FW',club:'TP Mazembe',age:27,caps:22,goals:8},
-    {n:14,name:'Elia Meschack',pos:'MF',club:'Nantes',age:25,caps:18,goals:3},
-    {n:16,name:'Glody Ngonda',pos:'MF',club:'TP Mazembe',age:26,caps:20,goals:2},
-    {n:17,name:'Jean-Marc Makusu',pos:'MF',club:'Standard Liège',age:27,caps:14,goals:2},
-    {n:18,name:'Emmanuel Leko',pos:'FW',club:'Kayserispor',age:28,caps:18,goals:5},
-    {n:19,name:'Jonathan Bolingi',pos:'FW',club:'Rizespor',age:30,caps:26,goals:7},
-    {n:20,name:'Fiston Mayele',pos:'FW',club:'Yeni Malatyaspor',age:28,caps:12,goals:4},
-    {n:21,name:'Théo Bongonda',pos:'FW',club:'KRC Genk',age:29,caps:20,goals:6},
-    {n:22,name:'Pierre Kalulu',pos:'DF',club:'Milan',age:24,caps:10,goals:0},
-    {n:24,name:'Merveille Bope Bokadi',pos:'MF',club:'Standard Liège',age:26,caps:8,goals:1},
-    {n:25,name:'Jordan Botaka',pos:'FW',club:'Sint-Truiden',age:31,caps:12,goals:3},
-    {n:26,name:'William Balikwisha',pos:'FW',club:'Standard Liège',age:24,caps:8,goals:2},
-  ]},
-  'Uzbekistan':{coach:'Srecko Katanec',style:'4-3-3',confederation:'AFC',players:[
-    {n:1,name:'Abduvohid Nishonov',pos:'GK',club:'Pakhtakor',age:28,caps:32,goals:0},
-    {n:12,name:'Sanjar Kuvvatov',pos:'GK',club:'Navbahor',age:26,goals:0,caps:8},
-    {n:23,name:'Sherzod Tashmatov',pos:'GK',club:'Lokomotiv Tashkent',age:30,goals:0,caps:5},
-    {n:2,name:'Sherzod Nasrullayev',pos:'DF',club:'Pakhtakor',age:27,caps:34,goals:1},
-    {n:3,name:'Akbar Shodiyev',pos:'DF',club:'Pakhtakor',age:29,caps:40,goals:2},
-    {n:4,name:'Otabek Shukurov',pos:'DF',club:'Metallurg Bekabad',age:30,caps:44,goals:1},
-    {n:5,name:'Temur Jufrayev',pos:'DF',club:'CSKA Moscow',age:25,caps:28,goals:2},
-    {n:6,name:'Dostonbek Khamdamov',pos:'DF',club:'Navbahor',age:26,caps:20,goals:0},
-    {n:13,name:'Khojiakbar Alijonov',pos:'DF',club:'Pakhtakor',age:24,caps:14,goals:0},
-    {n:15,name:'Mukhammadali Abdullayev',pos:'DF',club:'Lokomotiv Tashkent',age:26,caps:10,goals:0},
-    {n:7,name:'Eldor Shomurodov',pos:'FW',club:'Roma',age:29,caps:62,goals:22,nick:'Captain'},
-    {n:8,name:'Otabek Fayzullayev',pos:'MF',club:'Anderlecht',age:22,caps:28,goals:5},
-    {n:9,name:'Abbosbek Fayzullayev',pos:'FW',club:'Yokohama F·Marinos',age:22,caps:20,goals:8},
-    {n:10,name:'Jasur Yakhshiboyev',pos:'MF',club:'Pakhtakor',age:28,caps:38,goals:10},
-    {n:11,name:'Behruz Abdurakhmonov',pos:'FW',club:'FK Bukhara',age:26,caps:24,goals:8},
-    {n:14,name:'Khurshid Toshmatov',pos:'MF',club:'Pakhtakor',age:25,caps:22,goals:4},
-    {n:16,name:'Mirzo Yunusov',pos:'MF',club:'Metallurg',age:24,caps:14,goals:2},
-    {n:17,name:'Umid Hasanov',pos:'FW',club:'FC Bunyodkor',age:25,caps:18,goals:6},
-    {n:18,name:'Sukhrob Kholmatov',pos:'MF',club:'Pakhtakor',age:27,caps:20,goals:3},
-    {n:19,name:'Muzaffar Mirzayev',pos:'MF',club:'Lokomotiv Tashkent',age:24,caps:10,goals:2},
-    {n:20,name:'Jakhongir Sidikov',pos:'FW',club:'FK Bukhara',age:25,caps:12,goals:4},
-    {n:21,name:'Nodir Tursunov',pos:'FW',club:'Pakhtakor',age:23,caps:8,goals:2},
-    {n:22,name:'Doniyor Ergashev',pos:'DF',club:'Navbahor',age:26,caps:8,goals:0},
-    {n:24,name:'Sanjar Tursunov',pos:'FW',club:'Pakhtakor',age:22,caps:4,goals:1},
-    {n:25,name:'Ulugbek Botirov',pos:'DF',club:'Metallurg',age:25,caps:5,goals:0},
-    {n:26,name:'Sardor Rashidov',pos:'MF',club:'Pakhtakor',age:21,caps:3,goals:0},
-  ]},
-};
-
-// Fill remaining teams with placeholder squads
+/* ========== SQUADS (lazy-loaded from squads.js on first modal open) ========== */
+let SQUADS = {};
+let _squadsPromise = null;
+function ensureSquads(){
+  if(Object.keys(SQUADS).length) return Promise.resolve();
+  if(_squadsPromise) return _squadsPromise;
+  _squadsPromise=new Promise(resolve=>{
+    const s=document.createElement('script');
+    s.src='squads.js';
+    s.onload=()=>{
+      SQUADS=window.SQUADS_DATA||{};
+      const ph_pos=['GK','CB','CB','LB','RB','CDM','CM','CM','LW','RW','ST','GK','CB','LB','CM','CAM','ST','RW','LW','CM','ST','RB','GK'];
+      const ph_num=[1,4,5,3,2,6,8,14,11,7,9,12,13,3,10,15,17,16,18,20,21,22,23];
+      ALL_TEAM_NAMES.forEach(name=>{
+        if(!SQUADS[name]) SQUADS[name]={coach:'TBA',style:'4-3-3',confederation:'-',players:Array.from({length:23},(_,i)=>({n:ph_num[i],name:'Player '+ph_num[i],pos:ph_pos[i],club:'-',age:25,caps:20,goals:i<11?Math.floor(i*1.5):0}))};
+      });
+      resolve();
+    };
+    s.onerror=()=>{console.warn('squads.js failed to load');resolve();};
+    document.head.appendChild(s);
+  });
+  return _squadsPromise;
+}
 const ALL_TEAM_NAMES = GROUPS.flatMap(g=>g.teams);
-ALL_TEAM_NAMES.forEach(name=>{
-  if(!SQUADS[name]){
-    SQUADS[name]={coach:'TBA',style:'4-3-3',confederation:'—',players:Array.from({length:23},(_,i)=>{
-      const pos=['GK','CB','CB','LB','RB','CDM','CM','CM','LW','RW','ST','GK','CB','LB','CM','CAM','ST','RW','LW','CM','ST','RB','GK'];
-      const num=[1,4,5,3,2,6,8,14,11,7,9,12,13,3,10,15,17,16,18,20,21,22,23];
-      return {n:num[i],name:`Player ${num[i]}`,pos:pos[i],club:'—',age:25,caps:20,goals:i<11?Math.floor(i*1.5):0};
-    })};
-  }
-});
 
 /* ========== DATA: TOP SCORERS ========== */
 const SCORER_FILTERS = [
@@ -2688,22 +1356,28 @@ const SCORER_FILTERS = [
   {key:'GK',label:'Keeper'}
 ];
 const TOP_SCORERS_FALLBACK = [
-  {name:'Lionel Messi',team:'Argentina',pos:'CAM',goals:5,assists:0},
-  {name:'Vinicius Junior',team:'Brazil',pos:'LW',goals:4,assists:1},
-  {name:'Kylian Mbappe',team:'France',pos:'ST',goals:4,assists:0},
-  {name:'Erling Haaland',team:'Norway',pos:'ST',goals:4,assists:0},
-  {name:'Deniz Undav',team:'Germany',pos:'ST',goals:3,assists:2},
-  {name:'Johan Manzambi',team:'Switzerland',pos:'CM',goals:3,assists:1},
-  {name:'Matheus Cunha',team:'Brazil',pos:'ST',goals:3,assists:0},
-  {name:'Santiago Gimenez',team:'Mexico',pos:'ST',goals:2,assists:2},
-  {name:'Christian Pulisic',team:'United States',pos:'LW',goals:2,assists:1},
-  {name:'Jamal Musiala',team:'Germany',pos:'CAM',goals:2,assists:1},
-  {name:'Harry Kane',team:'England',pos:'ST',goals:2,assists:0},
-  {name:'Lautaro Martinez',team:'Argentina',pos:'ST',goals:2,assists:0},
-  {name:'Rafael Leao',team:'Portugal',pos:'LW',goals:1,assists:2},
-  {name:'Jude Bellingham',team:'England',pos:'CAM',goals:1,assists:2},
-  {name:'Rodrygo',team:'Brazil',pos:'RW',goals:1,assists:1},
-  {name:'Florian Wirtz',team:'Germany',pos:'CAM',goals:1,assists:1}
+  {name:'Lionel Messi',team:'Argentina',pos:'CAM',goals:7,assists:0},
+  {name:'Kylian Mbappé',team:'France',pos:'ST',goals:6,assists:2},
+  {name:'Harry Kane',team:'England',pos:'ST',goals:5,assists:0},
+  {name:'Erling Haaland',team:'Norway',pos:'ST',goals:5,assists:0},
+  {name:'Ousmane Dembélé',team:'France',pos:'RW',goals:4,assists:2},
+  {name:'Ismaïla Sarr',team:'Senegal',pos:'ST',goals:4,assists:1},
+  {name:'Vinícius Júnior',team:'Brazil',pos:'LW',goals:4,assists:1},
+  {name:'Mikel Oyarzabal',team:'Spain',pos:'ST',goals:4,assists:1},
+  {name:'Cody Gakpo',team:'Netherlands',pos:'ST',goals:3,assists:1},
+  {name:'Julián Quiñones',team:'Mexico',pos:'ST',goals:3,assists:1},
+  {name:'Ismael Saibari',team:'Morocco',pos:'CM',goals:3,assists:0},
+  {name:'Yoane Wissa',team:'Congo DR',pos:'ST',goals:3,assists:0},
+  {name:'Kai Havertz',team:'Germany',pos:'ST',goals:3,assists:0},
+  {name:'Cristiano Ronaldo',team:'Portugal',pos:'ST',goals:3,assists:0},
+  {name:'Jonathan David',team:'Canada',pos:'ST',goals:3,assists:0},
+  {name:'Michael Olise',team:'France',pos:'RW',goals:2,assists:5},
+  {name:'Brahim Díaz',team:'Morocco',pos:'CAM',goals:2,assists:4},
+  {name:'Alexander Isak',team:'Sweden',pos:'ST',goals:2,assists:3},
+  {name:'Florian Wirtz',team:'Germany',pos:'CAM',goals:2,assists:3},
+  {name:'Bruno Guimarães',team:'Brazil',pos:'CM',goals:1,assists:4},
+  {name:'Roberto Alvarado',team:'Mexico',pos:'CM',goals:1,assists:3},
+  {name:'Martin Ødegaard',team:'Norway',pos:'CAM',goals:1,assists:3}
 ];
 const SCORERS_PAGE_SIZE = 10;
 const LEADERBOARD_DATA = [
@@ -2748,6 +1422,17 @@ let posFilter = 'all';
 let activeScorerRole = 'all';
 let activeScorerPage = 1;
 let squadSearchVal = '';
+// Assist data keyed by normalizeTeamName(playerName) → count
+// Pre-seeded from FotMob (2026-07-05); overwritten by live FotMob fetch when possible
+let _assistsData = {
+  // Assist leaders — FotMob screenshot 2026-07-05
+  'michaelolise':5,
+  'brunoguimaraes':4,'brahimdiaz':4,
+  'florianwirtz':3,'robertoalvarado':3,'martindegaard':3,'alexanderisak':3,
+  // Top goal-scorers' assists — ESPN statistics 2026-07-05
+  'kylianmbappe':2,'ousmanedembele':2,
+  'ismailasarr':1,'viniciusjunior':1,'mikeloyarzabal':1,'codygakpo':1,'julianquinones':1
+};
 const RESULTS_CACHE_KEY = 'wc26-match-results-v1';
 const WATCH_SITE_URL = 'https://sportzfytvlive.xyz/';
 const SEEDED_MATCH_RESULTS={
@@ -2990,15 +1675,75 @@ async function fetchEventDetails(eventId,homeName,awayName){
     const res=await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event='+encodeURIComponent(eventId));
     if(!res.ok) return {scorers:[],shootout:null};
     const data=await res.json();
-    const scorers=(data.keyEvents||[]).filter(e=>e.scoringPlay&&!e.shootout).map(e=>({
-      name:e.participants&&e.participants[0]&&e.participants[0].athlete&&e.participants[0].athlete.displayName||e.shortText||'Goal',
-      team:apiTeamName(e.team),
-      minute:e.clock&&e.clock.displayValue||'',
-      ownGoal:/own goal/i.test(e.text||'')
-    }));
+    const scorers=(data.keyEvents||[]).filter(e=>e.scoringPlay&&!e.shootout).map(e=>{
+      const parts=e.participants||[];
+      const scorerPart=parts[0];
+      const assistPart=parts.find(p=>p.type&&/assist/i.test(p.type.description||p.type.text||p.type.name||''))||(parts.length>1&&parts[1]&&parts[1]!==parts[0]?parts[1]:null);
+      return {
+        name:scorerPart&&scorerPart.athlete&&scorerPart.athlete.displayName||e.shortText||'Goal',
+        team:apiTeamName(e.team),
+        minute:e.clock&&e.clock.displayValue||'',
+        ownGoal:/own goal/i.test(e.text||''),
+        assist:assistPart&&assistPart.athlete&&assistPart.athlete.displayName||null
+      };
+    });
     return {scorers,shootout:parseShootout(data,homeName,awayName)};
   }catch(e){return {scorers:[],shootout:null};}
 }
+/* ========== ASSIST SYNC (ESPN statistics primary, FotMob fallback) ========== */
+async function syncFotmobAssists(){
+  // Try ESPN statistics endpoint first (confirmed working)
+  try{
+    const res=await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/statistics?limit=50');
+    if(res.ok){
+      const data=await res.json();
+      const statsArr=data.stats||[];
+      const fresh={};
+      statsArr.forEach(stat=>{
+        (stat.leaders||[]).forEach(leader=>{
+          const name=leader.athlete?.displayName||'';
+          const assistStat=(leader.statistics||[]).find(s=>s.name==='goalAssists');
+          const assists=Math.round(+(assistStat?.value||0));
+          if(name&&assists>0) fresh[normalizeTeamName(name)]=assists;
+        });
+      });
+      if(Object.keys(fresh).length){
+        Object.assign(_assistsData,fresh); // merge — preserves FotMob assist-leader data
+        renderLeaderboard();
+        return;
+      }
+    }
+  }catch(e){}
+  // FotMob fallback — full replacement if it returns data
+  const urls=[
+    'https://www.fotmob.com/api/leagueseasondeepstats?id=24254&type=players&stat=goal_assist',
+    'https://www.fotmob.com/api/leagueseasondeepstats?id=77&type=players&stat=goal_assist&season=24254',
+  ];
+  for(const url of urls){
+    try{
+      const res=await fetch(url);
+      if(!res.ok) continue;
+      const data=await res.json();
+      const topLists=data.TopLists||data.topLists||[];
+      const firstList=topLists[0]||{};
+      const items=firstList.Items||firstList.items||[];
+      if(!items.length) continue;
+      const fresh={};
+      items.forEach(item=>{
+        const name=item.Name||item.name||item.ParticipantName||item.participantName||'';
+        const val=+(item.StatValue||item.statValue||item.Value||item.value||0);
+        if(name&&val>0) fresh[normalizeTeamName(name)]=val;
+      });
+      if(Object.keys(fresh).length){
+        _assistsData=fresh;
+        renderLeaderboard();
+        return;
+      }
+    }catch(e){}
+  }
+  // All APIs unreachable — keep pre-seeded _assistsData
+}
+
 async function fetchEventScorers(eventId){
   const details=await fetchEventDetails(eventId,'','');
   return details.scorers;
@@ -3773,21 +2518,23 @@ document.getElementById('squadSearch').addEventListener('input',e=>{squadSearchV
 
 /* ========== SQUAD MODAL ========== */
 function openTeamModal(name){
-  const squad=SQUADS[name];if(!squad)return;
-  modalTeamName=name;posFilter='all';
-  document.querySelectorAll('.pos-filter').forEach(b=>b.classList.toggle('active',b.dataset.pos==='all'));
-  const cp=colourPair(name);
-  const fifaRank=FIFA_RANKINGS[name];
-  const rankBadge=fifaRank?` <span class="rank-badge">FIFA Rank #${fifaRank}</span>`:'';
-  document.getElementById('modalHead').style.background=`linear-gradient(135deg,${cp[0]}22,transparent)`;
-  document.getElementById('modalFlagWrap').innerHTML=teamFlagImg(name,'lg');
-  document.getElementById('modalTeam').innerHTML=`${name} <span class="count-badge">${squad.players.length} PLAYERS</span>${rankBadge}`;
-  document.getElementById('modalCoach').innerHTML=`<span>Coach: <strong>${squad.coach}</strong></span><span style="color:var(--text-low)">·</span><span>${squad.confederation}</span>`;
-  renderModalPlayers(squad,name);renderClubs(squad);
-  const modalEl=document.getElementById('modal');
-  const modalCard=modalEl.querySelector('.modal');
-  if(modalCard) modalCard.scrollTop=0;
-  modalEl.classList.add('open');document.body.style.overflow='hidden';
+  ensureSquads().then(()=>{
+    const squad=SQUADS[name];if(!squad)return;
+    modalTeamName=name;posFilter='all';
+    document.querySelectorAll('.pos-filter').forEach(b=>b.classList.toggle('active',b.dataset.pos==='all'));
+    const cp=colourPair(name);
+    const fifaRank=FIFA_RANKINGS[name];
+    const rankBadge=fifaRank?` <span class="rank-badge">FIFA Rank #${fifaRank}</span>`:'';
+    document.getElementById('modalHead').style.background=`linear-gradient(135deg,${cp[0]}22,transparent)`;
+    document.getElementById('modalFlagWrap').innerHTML=teamFlagImg(name,'lg');
+    document.getElementById('modalTeam').innerHTML=`${name} <span class="count-badge">${squad.players.length} PLAYERS</span>${rankBadge}`;
+    document.getElementById('modalCoach').innerHTML=`<span>Coach: <strong>${squad.coach}</strong></span><span style="color:var(--text-low)">·</span><span>${squad.confederation}</span>`;
+    renderModalPlayers(squad,name);renderClubs(squad);
+    const modalEl=document.getElementById('modal');
+    const modalCard=modalEl.querySelector('.modal');
+    if(modalCard) modalCard.scrollTop=0;
+    modalEl.classList.add('open');document.body.style.overflow='hidden';
+  });
 }
 function renderModalPlayers(squad,teamName){
   const cp=colourPair(teamName);
@@ -3890,14 +2637,15 @@ function renderLeaderboard(){
       <td>
         <div class="scorer-player">
           <span class="scorer-avatar"><img class="player-photo scorer-photo" src="${makeAvatarSVG(p.name,cp[0],96)}" data-player-name="${escapeHTML(p.name)}" data-player-color="${escapeHTML(cp[0])}" alt="${escapeHTML(p.name)}">${teamFlagImg(p.team,'xs')}</span>
-          <span class="scorer-info"><span class="scorer-name">${escapeHTML(p.name)}</span><span class="scorer-meta">Assists: ${p.assists||0}</span></span>
+          <span class="scorer-info"><span class="scorer-name">${escapeHTML(p.name)}</span></span>
         </div>
       </td>
       <td><span class="scorer-team">${teamFlagImg(p.team,'xs')} ${escapeHTML(p.team)}</span></td>
       <td><span class="scorer-pos">${escapeHTML(p.pos)}</span></td>
       <td><span class="scorer-goals">${p.goals}</span></td>
+      <td><span class="scorer-assists">${p.assists||0}</span></td>
     </tr>`;
-  }).join(''):'<tr><td colspan="5"><div class="scorer-empty">NO SCORERS FOUND</div></td></tr>';
+  }).join(''):'<tr><td colspan="6"><div class="scorer-empty">NO SCORERS FOUND</div></td></tr>';
   board.innerHTML=`
     <div class="scorer-board-head">
       <div class="scorer-title"><span class="scorer-title-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M5 6H3v1a4 4 0 0 0 4 4"/><path d="M19 6h2v1a4 4 0 0 1-4 4"/></svg></span><div><h3>Top Scorer</h3><span>FIFA World Cup 2026 - Player Stats</span></div></div>
@@ -3906,7 +2654,7 @@ function renderLeaderboard(){
     <div class="scorer-filters">${filters}</div>
     <div class="scorer-table-wrap">
       <table class="scorer-table">
-        <thead><tr><th>#</th><th>Player</th><th>Country</th><th>Role</th><th>Goals</th></tr></thead>
+        <thead><tr><th>#</th><th>Player</th><th>Country</th><th>Role</th><th>Goals</th><th>Assists</th></tr></thead>
         <tbody>${body}</tbody>
       </table>
     </div>
@@ -3922,22 +2670,35 @@ function renderLeaderboard(){
 }
 function getTopScorers(){
   const live={};
+  function ensureEntry(name,team){
+    const key=normalizeTeamName(name)+'|'+normalizeTeamName(team);
+    if(!live[key]){
+      const squad=SQUADS[team];
+      const player=squad&&squad.players.find(p=>normalizeTeamName(p.name)===normalizeTeamName(name));
+      live[key]={name,team,pos:mapScorerRole(player&&player.pos),goals:0,assists:0};
+    }
+    return key;
+  }
   Object.values(matchResults||{}).forEach(result=>{
     (result.scorers||[]).forEach(s=>{
       if(s.ownGoal) return;
       const teamName=resolveTeamName(s.team);
-      const key=normalizeTeamName(s.name)+'|'+normalizeTeamName(teamName);
-      if(!live[key]){
-        const squad=SQUADS[teamName];
-        const player=squad&&squad.players.find(p=>normalizeTeamName(p.name)===normalizeTeamName(s.name));
-        live[key]={name:s.name,team:teamName,pos:mapScorerRole(player&&player.pos),goals:0,assists:0};
-      }
+      const key=ensureEntry(s.name,teamName);
       live[key].goals++;
+      if(s.assist){
+        const aKey=ensureEntry(s.assist,teamName);
+        live[aKey].assists++;
+      }
     });
   });
   const liveRows=Object.values(live).filter(p=>p.goals>0);
-  const source=liveRows.length?liveRows:TOP_SCORERS_FALLBACK;
-  return source.slice().sort((a,b)=>b.goals-a.goals||b.assists-a.assists||a.name.localeCompare(b.name));
+  const source=(liveRows.length?liveRows:TOP_SCORERS_FALLBACK).map(p=>({...p}));
+  // Overlay FotMob assist data (pre-seeded + live-refreshed)
+  source.forEach(p=>{
+    const val=_assistsData[normalizeTeamName(p.name)];
+    if(val!==undefined) p.assists=val;
+  });
+  return source.sort((a,b)=>b.goals-a.goals||b.assists-a.assists||a.name.localeCompare(b.name));
 }
 function mergeScorerRows(seed,liveRows){
   const byKey={};
@@ -3984,15 +2745,36 @@ function hydrateScorerImages(){
   });
 }
 
+/* ========== TAB TITLE (shows live scores while matches are in progress) ========== */
+const BASE_TITLE='FIFA World Cup 2026 — Live Fixture & Squad Centre';
+function updateTabTitle(){
+  const live=FIXTURES.filter(f=>matchResults[f.id]&&matchResults[f.id].state==='in');
+  if(!live.length){document.title=BASE_TITLE;return;}
+  const parts=live.slice(0,2).map(f=>{const r=matchResults[f.id];return f.home+' '+r.homeScore+'–'+r.awayScore+' '+f.away;});
+  document.title='⚽ '+parts.join(' | ')+' | WC26';
+}
+
+/* ========== ADAPTIVE POLLING (30-45s when live, 5min otherwise) ========== */
+let _syncTimer=null;
+function scheduleSync(){
+  clearTimeout(_syncTimer);
+  const anyLive=Object.values(matchResults||{}).some(r=>r.state==='in');
+  const delay=anyLive?45*1000:5*60*1000;
+  _syncTimer=setTimeout(()=>{syncMatchResults(false).finally(scheduleSync);},delay);
+}
+
 /* ========== INIT ========== */
 function init(){
   renderCountryPicker();selectCountry('BD');
   renderPills();renderDateStrip();renderFixtures();renderHeroScoreboard();renderRound32Tracker();
-  renderStandings();renderGroups();renderLeaderboard();syncMatchResults(false);
+  renderStandings();renderGroups();renderLeaderboard();
+  syncMatchResults(false).finally(scheduleSync);
+  syncFotmobAssists();
+  // Re-sync FotMob assists every 10 minutes
+  setInterval(syncFotmobAssists,10*60*1000);
   // Refresh clock + scoreboard every 60 seconds — auto-advances feature match as time passes
-  setInterval(()=>{updateNowLabel();renderFixtures();renderHeroScoreboard();renderRound32Tracker();},60000);
+  setInterval(()=>{updateNowLabel();renderFixtures();renderHeroScoreboard();renderRound32Tracker();updateTabTitle();},60000);
   setInterval(updateFeaturedCountdown,1000);
-  setInterval(()=>syncMatchResults(false),5*60*1000);
 }
 /* ===== THEME TOGGLE ===== */
 (function(){
