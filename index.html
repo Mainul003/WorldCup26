@@ -2750,10 +2750,26 @@ let activeScorerPage = 1;
 let squadSearchVal = '';
 const RESULTS_CACHE_KEY = 'wc26-match-results-v1';
 const WATCH_SITE_URL = 'https://sportzfytvlive.xyz/';
+const SEEDED_MATCH_RESULTS={
+  80:{
+    homeScore:2,awayScore:1,
+    homeWinner:true,awayWinner:false,
+    completed:true,state:'post',status:'FT',
+    eventId:'seed-match-80',
+    scorers:[
+      {name:'Harry Kane',team:'England',minute:"75'",ownGoal:false},
+      {name:'Harry Kane',team:'England',minute:"86'",ownGoal:false},
+      {name:'Cipenga',team:'DR Congo',minute:"7'",ownGoal:false}
+    ],
+    scorersLoaded:true,shootout:null,shootoutLoaded:true,
+    updatedAt:'2026-07-01T18:00:00Z'
+  }
+};
 let matchResults = {};
 let resultsSyncing = false;
 
 try{matchResults=JSON.parse(localStorage.getItem(RESULTS_CACHE_KEY)||'{}')||{};}catch(e){matchResults={};}
+applySeededMatchResults();
 
 function openWatchSite(){
   window.open(WATCH_SITE_URL,'_blank','noopener,noreferrer');
@@ -2772,10 +2788,25 @@ function normalizeTeamName(name){
     'usa':'unitedstates','us':'unitedstates','unitedstatesofamerica':'unitedstates',
     'southkorea':'korearepublic','korea':'korearepublic',
     'bosniaandherzegovina':'bosniaherz','bosniaherzegovina':'bosniaherz',
-    'turkey':'turkiye'
+    'turkey':'turkiye',
+    'congodr':'drcongo','congodemocraticrepublic':'drcongo',
+    'democraticrepublicofcongo':'drcongo','democraticrepublicofthecongo':'drcongo',
+    'drc':'drcongo','cod':'drcongo'
   };
   const key=String(name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
   return aliases[key]||key;
+}
+function applySeededMatchResults(){
+  let changed=false;
+  Object.keys(SEEDED_MATCH_RESULTS).forEach(id=>{
+    const existing=matchResults[id];
+    if(existing&&existing.completed) return;
+    matchResults[id]={...SEEDED_MATCH_RESULTS[id]};
+    changed=true;
+  });
+  if(changed){
+    try{localStorage.setItem(RESULTS_CACHE_KEY,JSON.stringify(matchResults));}catch(e){}
+  }
 }
 const SEEDED_PENALTY_SHOOTOUTS={
   74:{homeScore:3,awayScore:4,home:[false,true,true,false,true,false],away:[true,true,true,false,false,true]},
